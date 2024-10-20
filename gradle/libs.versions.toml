@@ -24,7 +24,6 @@ coil-compose = "2.7.0"
 lottie = "6.5.2"
 core-splashscreen = "1.0.1"
 ui-text-google-fonts = "1.7.4"
-cloudy = "0.2.3"
 
 [libraries]
 #Core & Lifecycle
@@ -81,8 +80,6 @@ lottie-compose = { group = "com.airbnb.android", name = "lottie-compose", versio
 core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "core-splashscreen" }
 #Google Fonts
 ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "ui-text-google-fonts" }
-#Cloudy Blur Effect
-compose-cloudy = { module = "com.github.skydoves:cloudy", version.ref = "cloudy" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

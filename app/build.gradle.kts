@@ -125,7 +125,4 @@ dependencies {
 
     //Google Fonts
     implementation(libs.ui.text.google.fonts)
-
-    //Cloud Blur Effect
-    implementation(libs.compose.cloudy)
 }

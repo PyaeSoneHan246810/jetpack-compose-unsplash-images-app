@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">UnsplashGallery</string>
+    <string name="app_name">Unsplash Gallery</string>
+    <string name="search">Search</string>
+    <string name="favorites">Favorites</string>
+    <string name="favorite_images">Favorite Images</string>
+    <string name="back">Back</string>
 </resources>
