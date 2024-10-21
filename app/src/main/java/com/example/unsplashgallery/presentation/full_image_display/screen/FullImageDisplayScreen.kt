@@ -1,5 +1,6 @@
 package com.example.unsplashgallery.presentation.full_image_display.screen
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -15,7 +16,6 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -46,6 +46,7 @@ import com.example.unsplashgallery.utils.toggleSystemBarsVisibility
 import kotlinx.coroutines.launch
 import kotlin.math.max
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun FullImageDisplayScreen(
@@ -106,36 +107,33 @@ fun FullImageDisplayScreen(
         modifier = Modifier
             .fillMaxSize()
             .then(modifier),
-        topBar = {
-            AnimatedVisibility(
-                visible = isTopAppBarVisible,
-                enter = slideInVertically() + fadeIn(),
-                exit = slideOutVertically() + fadeOut()
-            ) {
-                FullImageDisplayTopAppBar(
-                    photographerProfileImageUrl = unsplashImage?.photographerProfileImageUrl,
-                    photographerName = unsplashImage?.photographerName,
-                    photographerUsername = unsplashImage?.photographerUsername,
-                    photographerProfileLink = unsplashImage?.photographerProfileLink,
-                    onArrowBackIconButtonClick = onArrowBackIconButtonClick,
-                    onDownloadIconButtonClick = onDownloadIconButtonClick,
-                    onPhotographerInfoClick = onPhotographerInfoClick
-                )
-            }
-        }
-    ) { paddingValues ->
+    ) {
         Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    top = paddingValues.calculateTopPadding()
-                )
         ) {
             Box(
                 modifier = Modifier
                     .fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
+                AnimatedVisibility(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter),
+                    visible = isTopAppBarVisible,
+                    enter = slideInVertically() + fadeIn(),
+                    exit = slideOutVertically() + fadeOut()
+                ) {
+                    FullImageDisplayTopAppBar(
+                        photographerProfileImageUrl = unsplashImage?.photographerProfileImageUrl,
+                        photographerName = unsplashImage?.photographerName,
+                        photographerUsername = unsplashImage?.photographerUsername,
+                        photographerProfileLink = unsplashImage?.photographerProfileLink,
+                        onArrowBackIconButtonClick = onArrowBackIconButtonClick,
+                        onDownloadIconButtonClick = onDownloadIconButtonClick,
+                        onPhotographerInfoClick = onPhotographerInfoClick
+                    )
+                }
                 if (isLoadingImage) {
                     //image loading indicator
                     AnimatedLoadingIndicator()
