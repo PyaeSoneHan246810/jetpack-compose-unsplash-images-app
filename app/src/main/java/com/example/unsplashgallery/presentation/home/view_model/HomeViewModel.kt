@@ -2,9 +2,8 @@ package com.example.unsplashgallery.presentation.home.view_model
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.unsplashgallery.data.mapper.toDomainModel
-import com.example.unsplashgallery.di.AppModule
 import com.example.unsplashgallery.domain.model.UnsplashImage
+import com.example.unsplashgallery.domain.repository.ImageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +12,9 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class HomeViewModel @Inject constructor(): ViewModel() {
+class HomeViewModel @Inject constructor(
+    private val imageRepository: ImageRepository
+): ViewModel() {
     private val _unsplashImages: MutableStateFlow<List<UnsplashImage>> = MutableStateFlow(listOf())
     val unsplashImages: StateFlow<List<UnsplashImage>> = _unsplashImages.asStateFlow()
 
@@ -23,11 +24,12 @@ class HomeViewModel @Inject constructor(): ViewModel() {
 
     private fun getUnsplashImages() {
         viewModelScope.launch {
-            val dtoImages = AppModule.provideUnsplashApiService().getEditorialFeedImages()
-            val domainModelImages = dtoImages.map { dtoImage ->
-                dtoImage.toDomainModel()
+            try {
+                val unsplashImagesResult = imageRepository.getEditorialFeedImages()
+                _unsplashImages.value = unsplashImagesResult
+            } catch (e: Exception) {
+                e.printStackTrace()
             }
-            _unsplashImages.value = domainModelImages
         }
     }
 }

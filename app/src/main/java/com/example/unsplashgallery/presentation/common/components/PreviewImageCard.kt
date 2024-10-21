@@ -20,20 +20,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.unsplashgallery.R
 import com.example.unsplashgallery.domain.model.UnsplashImage
 
 @Composable
 fun PreviewImageCard(
     modifier: Modifier = Modifier,
-    previewImage: UnsplashImage,
+    previewImage: UnsplashImage?,
 ) {
     val context = LocalContext.current
     val imageAspectRadio by remember {
         derivedStateOf {
-            previewImage.width.toFloat() / previewImage.height.toFloat()
+            ((previewImage?.width ?: 1).toFloat() / (previewImage?.height ?: 1).toFloat())
         }
     }
     Card(
@@ -60,10 +62,10 @@ fun PreviewImageCard(
                         .clip(CircleShape),
                     model = ImageRequest
                         .Builder(context)
-                        .data(previewImage.photographerProfileImageUrl)
+                        .data(previewImage?.photographerProfileImageUrl)
                         .crossfade(true)
                         .build(),
-                    contentDescription = previewImage.photographerName,
+                    contentDescription = previewImage?.photographerName,
                     contentScale = ContentScale.FillBounds,
                 )
                 Spacer(
@@ -71,7 +73,7 @@ fun PreviewImageCard(
                         .width(12.dp)
                 )
                 Text(
-                    text = previewImage.photographerName
+                    text = previewImage?.photographerName ?: stringResource(R.string.unknown_name)
                 )
             }
             AsyncImage(
@@ -80,10 +82,10 @@ fun PreviewImageCard(
                     .aspectRatio(imageAspectRadio),
                 model = ImageRequest
                     .Builder(context)
-                    .data(previewImage.imageUrlRegular)
+                    .data(previewImage?.imageUrlRegular)
                     .crossfade(true)
                     .build(),
-                contentDescription = previewImage.description,
+                contentDescription = previewImage?.description,
                 contentScale = ContentScale.FillBounds,
             )
         }

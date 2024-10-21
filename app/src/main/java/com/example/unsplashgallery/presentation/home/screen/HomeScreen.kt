@@ -19,6 +19,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +37,8 @@ import com.example.unsplashgallery.presentation.common.components.MainTopAppBar
 import com.example.unsplashgallery.presentation.common.components.PreviewImageCard
 import com.example.unsplashgallery.presentation.common.components.UnsplashImageCardGrids
 import com.example.unsplashgallery.presentation.theme.AppTheme
+import com.example.unsplashgallery.utils.rememberWindowInsetsControllerCompat
+import com.example.unsplashgallery.utils.toggleSystemBarsVisibility
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,6 +49,12 @@ fun HomeScreen(
     onSearchIconButtonClick: () -> Unit,
     onFavoritesFabClick: () -> Unit,
 ) {
+    val windowInsetsControllerCompact = rememberWindowInsetsControllerCompat()
+    LaunchedEffect(key1 = Unit) {
+        windowInsetsControllerCompact.toggleSystemBarsVisibility(
+            visible = true
+        )
+    }
     val topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     var isPreviewImageCardVisible by rememberSaveable {
         mutableStateOf(false)
@@ -115,27 +124,25 @@ fun HomeScreen(
             exit = scaleOut() + fadeOut(),
             visible = isPreviewImageCardVisible && previewImage != null
         ) {
-            previewImage?.let {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(
-                                color = MaterialTheme.colorScheme.scrim.copy(alpha = 0.6f)
-                            )
-                    )
-                    PreviewImageCard(
-                        modifier = Modifier
-                            .padding(
-                                horizontal = 20.dp
-                            ),
-                        previewImage = it
-                    )
-                }
+                        .fillMaxSize()
+                        .background(
+                            color = MaterialTheme.colorScheme.scrim.copy(alpha = 0.6f)
+                        )
+                )
+                PreviewImageCard(
+                    modifier = Modifier
+                        .padding(
+                            horizontal = 20.dp
+                        ),
+                    previewImage = previewImage
+                )
             }
         }
     }
@@ -148,17 +155,17 @@ private fun HomeScreenPrev() {
         HomeScreen(
             unsplashImages = listOf(
                 UnsplashImage(
-                    id = "LBI7cgq3pbM",
-                    imageUrlSmall = "https://images.unsplash.com/face-springmorning.jpg?q=75&fm=jpg&w=400&fit=max",
-                    imageUrlRegular = "https://images.unsplash.com/face-springmorning.jpg?q=75&fm=jpg&w=1080&fit=max",
-                    imageUrlRaw = "https://images.unsplash.com/face-springmorning.jpg",
-                    photographerName = "Gilbert Kane",
-                    photographerUsername = "poorkane",
-                    photographerProfileImageUrl = "https://images.unsplash.com/face-springmorning.jpg?q=80&fm=jpg&crop=faces&fit=crop&h=64&w=64",
-                    photographerProfileLink = "https://api.unsplash.com/users/poorkane",
+                    id = "id",
+                    imageUrlSmall = stringResource(R.string.url_placeholder),
+                    imageUrlRegular = stringResource(R.string.url_placeholder),
+                    imageUrlRaw = stringResource(R.string.url_placeholder),
+                    photographerName = "Name",
+                    photographerUsername = "Username",
+                    photographerProfileImageUrl = stringResource(R.string.url_placeholder),
+                    photographerProfileLink = stringResource(R.string.url_placeholder),
                     width = 5245,
                     height = 3497,
-                    description = "A man drinking a coffee."
+                    description = "Description..."
                 )
             ),
             onImageCardClick = {},

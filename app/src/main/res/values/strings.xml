@@ -4,4 +4,9 @@
     <string name="favorites">Favorites</string>
     <string name="favorite_images">Favorite Images</string>
     <string name="back">Back</string>
+    <string name="download_image">Download the image</string>
+    <string name="unknown_name">Unknown Name</string>
+    <string name="unknown_username">Unknown Username</string>
+    <string name="url_placeholder">https://placehold.co/400</string>
+    <string name="image_loading_error">Unable to load the image.</string>
 </resources>

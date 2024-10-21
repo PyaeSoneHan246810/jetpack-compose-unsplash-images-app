@@ -1,6 +1,8 @@
 package com.example.unsplashgallery.di
 
 import com.example.unsplashgallery.data.remote.api.UnsplashApiService
+import com.example.unsplashgallery.data.repository.ImageRepositoryImpl
+import com.example.unsplashgallery.domain.repository.ImageRepository
 import com.example.unsplashgallery.utils.Constants
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -15,23 +17,30 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
-    private val json = Json {
-        prettyPrint = true
-        isLenient = true
-        ignoreUnknownKeys = true
-    }
-
-    private val contentType = "application/json".toMediaType()
-
     @Provides
     @Singleton
     fun provideUnsplashApiService(): UnsplashApiService {
+        val json = Json {
+            prettyPrint = true
+            isLenient = true
+            ignoreUnknownKeys = true
+        }
+        val contentType = "application/json".toMediaType()
         return Retrofit
             .Builder()
             .baseUrl(Constants.BASE_URL)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
             .create(UnsplashApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideImageRepository(
+        unsplashApiService: UnsplashApiService
+    ): ImageRepository {
+        return ImageRepositoryImpl(
+            unsplashApiService = unsplashApiService
+        )
     }
 }

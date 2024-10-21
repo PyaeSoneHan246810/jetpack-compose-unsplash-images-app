@@ -8,7 +8,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.toRoute
 import com.example.unsplashgallery.presentation.favorites.screen.FavoritesScreen
 import com.example.unsplashgallery.presentation.favorites.view_model.FavoritesViewModel
 import com.example.unsplashgallery.presentation.full_image_display.screen.FullImageDisplayScreen
@@ -65,15 +64,25 @@ fun MainNavGraph(
                 }
             )
         }
-        composable<Destination.FullImageDisplay> { navBackStackEntry ->
-            val destination = navBackStackEntry.toRoute<Destination.FullImageDisplay>()
-            val imageId = destination.imageId
+        composable<Destination.FullImageDisplay> {
             val fullImageDisplayViewModel = hiltViewModel<FullImageDisplayViewModel>()
-            FullImageDisplayScreen()
+            val unsplashImage by fullImageDisplayViewModel.unsplashImage.collectAsState()
+            FullImageDisplayScreen(
+                unsplashImage = unsplashImage,
+                onArrowBackIconButtonClick = {
+                    navHostController.navigateUp()
+                },
+                onDownloadIconButtonClick = {},
+                onPhotographerInfoClick = { profileLink ->
+                    navHostController.navigate(
+                        Destination.PhotographerProfile(
+                            profileLink = profileLink
+                        )
+                    )
+                }
+            )
         }
-        composable<Destination.PhotographerProfile> { navBackStackEntry ->
-            val destination = navBackStackEntry.toRoute<Destination.PhotographerProfile>()
-            val profileLink = destination.profileLink
+        composable<Destination.PhotographerProfile> {
             val photographerProfileViewModel = hiltViewModel<PhotographerProfileViewModel>()
             PhotographerProfileScreen()
         }
