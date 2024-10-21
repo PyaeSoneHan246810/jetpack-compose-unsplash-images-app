@@ -12,7 +12,7 @@ fun UnsplashImageDto.toDomainModel(): UnsplashImage {
         photographerName = this.userDto.name,
         photographerUsername = this.userDto.username,
         photographerProfileImageUrl = this.userDto.profileImageDto.medium,
-        photographerProfileLink = this.userDto.userLinksDto.self,
+        photographerProfileLink = this.userDto.userLinksDto.html,
         width = this.width,
         height = this.height,
         description = this.description

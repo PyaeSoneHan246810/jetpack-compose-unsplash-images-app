@@ -8,6 +8,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.toRoute
 import com.example.unsplashgallery.presentation.favorites.screen.FavoritesScreen
 import com.example.unsplashgallery.presentation.favorites.view_model.FavoritesViewModel
 import com.example.unsplashgallery.presentation.full_image_display.screen.FullImageDisplayScreen
@@ -15,7 +16,6 @@ import com.example.unsplashgallery.presentation.full_image_display.view_model.Fu
 import com.example.unsplashgallery.presentation.home.screen.HomeScreen
 import com.example.unsplashgallery.presentation.home.view_model.HomeViewModel
 import com.example.unsplashgallery.presentation.photographer_profile.screen.PhotographerProfileScreen
-import com.example.unsplashgallery.presentation.photographer_profile.view_model.PhotographerProfileViewModel
 import com.example.unsplashgallery.presentation.search.screen.SearchScreen
 import com.example.unsplashgallery.presentation.search.view_model.SearchViewModel
 
@@ -82,9 +82,15 @@ fun MainNavGraph(
                 }
             )
         }
-        composable<Destination.PhotographerProfile> {
-            val photographerProfileViewModel = hiltViewModel<PhotographerProfileViewModel>()
-            PhotographerProfileScreen()
+        composable<Destination.PhotographerProfile> { navBackStackEntry ->
+            val destination = navBackStackEntry.toRoute<Destination.PhotographerProfile>()
+            val profileLink = destination.profileLink
+            PhotographerProfileScreen(
+                profileLink = profileLink,
+                onArrowBackIconButtonClick = {
+                    navHostController.navigateUp()
+                }
+            )
         }
     }
 }

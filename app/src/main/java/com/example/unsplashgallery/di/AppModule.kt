@@ -21,8 +21,6 @@ object AppModule {
     @Singleton
     fun provideUnsplashApiService(): UnsplashApiService {
         val json = Json {
-            prettyPrint = true
-            isLenient = true
             ignoreUnknownKeys = true
         }
         val contentType = "application/json".toMediaType()
