@@ -26,7 +26,7 @@ fun UnsplashImageCardGrids(
         modifier = Modifier
             .fillMaxWidth()
             .then(modifier),
-        columns = StaggeredGridCells.Adaptive(120.dp),
+        columns = StaggeredGridCells.Adaptive(140.dp),
         verticalItemSpacing = 12.dp,
         horizontalArrangement = Arrangement.spacedBy(12.dp),
         contentPadding = PaddingValues(

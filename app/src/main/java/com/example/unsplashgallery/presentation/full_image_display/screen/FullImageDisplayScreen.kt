@@ -1,6 +1,7 @@
 package com.example.unsplashgallery.presentation.full_image_display.screen
 
 import android.annotation.SuppressLint
+import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,9 +17,11 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -40,6 +43,8 @@ import coil.compose.rememberAsyncImagePainter
 import com.example.unsplashgallery.R
 import com.example.unsplashgallery.domain.model.UnsplashImage
 import com.example.unsplashgallery.presentation.common.components.AnimatedLoadingIndicator
+import com.example.unsplashgallery.presentation.common.components.ImageDownloadOption
+import com.example.unsplashgallery.presentation.common.components.ImageDownloadOptionsModalBottomSheet
 import com.example.unsplashgallery.presentation.full_image_display.component.FullImageDisplayTopAppBar
 import com.example.unsplashgallery.utils.rememberWindowInsetsControllerCompat
 import com.example.unsplashgallery.utils.toggleSystemBarsVisibility
@@ -47,16 +52,18 @@ import kotlinx.coroutines.launch
 import kotlin.math.max
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
-@OptIn(ExperimentalFoundationApi::class)
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun FullImageDisplayScreen(
     modifier: Modifier = Modifier,
     unsplashImage: UnsplashImage?,
-    onArrowBackIconButtonClick: () -> Unit,
-    onDownloadIconButtonClick: () -> Unit,
-    onPhotographerInfoClick: (profileLink: String) -> Unit
+    onNavigateUp: () -> Unit,
+    onPhotographerInfoClick: (profileLink: String) -> Unit,
+    onDownloadOptionClick: (option: ImageDownloadOption) -> Unit
 ) {
+    //coroutine scope
     val scope = rememberCoroutineScope()
+    //top app bar & system bar visibility
     var isTopAppBarVisible by rememberSaveable {
         mutableStateOf(false)
     }
@@ -69,6 +76,12 @@ fun FullImageDisplayScreen(
             visible = isSystemBarsVisible
         )
     }
+    //modal bottom sheet visibility
+    val modalBottomSheetState = rememberModalBottomSheetState()
+    var isModalBottomSheetVisible by rememberSaveable {
+        mutableStateOf(false)
+    }
+    //image loading and error
     var isLoadingImage by rememberSaveable {
         mutableStateOf(true)
     }
@@ -82,6 +95,7 @@ fun FullImageDisplayScreen(
             isErrorImage = state is AsyncImagePainter.State.Error
         },
     )
+    //image zooming
     var scale by rememberSaveable {
         mutableFloatStateOf(1f)
     }
@@ -103,6 +117,18 @@ fun FullImageDisplayScreen(
     val imageInteractionSource = remember {
         MutableInteractionSource()
     }
+    BackHandler {
+        if (isModalBottomSheetVisible) {
+            scope.launch {
+                modalBottomSheetState.hide()
+            }.invokeOnCompletion {
+                isModalBottomSheetVisible = false
+            }
+        } else {
+            onNavigateUp()
+        }
+    }
+    //screen content
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -117,6 +143,7 @@ fun FullImageDisplayScreen(
                     .fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
+                //top app bar
                 AnimatedVisibility(
                     modifier = Modifier
                         .align(Alignment.TopCenter),
@@ -129,13 +156,19 @@ fun FullImageDisplayScreen(
                         photographerName = unsplashImage?.photographerName,
                         photographerUsername = unsplashImage?.photographerUsername,
                         photographerProfileLink = unsplashImage?.photographerProfileLink,
-                        onArrowBackIconButtonClick = onArrowBackIconButtonClick,
-                        onDownloadIconButtonClick = onDownloadIconButtonClick,
+                        onArrowBackIconButtonClick = onNavigateUp,
+                        onDownloadIconButtonClick = {
+                            scope.launch {
+                                modalBottomSheetState.show()
+                            }.invokeOnCompletion {
+                                isModalBottomSheetVisible = true
+                            }
+                        },
                         onPhotographerInfoClick = onPhotographerInfoClick
                     )
                 }
+                //image loading indicator
                 if (isLoadingImage) {
-                    //image loading indicator
                     AnimatedLoadingIndicator()
                 }
                 if (isErrorImage) {
@@ -183,6 +216,27 @@ fun FullImageDisplayScreen(
                         painter = asyncImagePainter,
                         contentDescription = unsplashImage?.description,
                         contentScale = ContentScale.FillBounds
+                    )
+                }
+                //modal bottom sheet
+                if (isModalBottomSheetVisible) {
+                    ImageDownloadOptionsModalBottomSheet(
+                        sheetState = modalBottomSheetState,
+                        onDismissRequest = {
+                            scope.launch {
+                                modalBottomSheetState.hide()
+                            }.invokeOnCompletion {
+                                isModalBottomSheetVisible = false
+                            }
+                        },
+                        onDownloadOptionClick = { option ->
+                            scope.launch {
+                                modalBottomSheetState.hide()
+                            }.invokeOnCompletion {
+                                isModalBottomSheetVisible = false
+                            }
+                            onDownloadOptionClick(option)
+                        }
                     )
                 }
             }
