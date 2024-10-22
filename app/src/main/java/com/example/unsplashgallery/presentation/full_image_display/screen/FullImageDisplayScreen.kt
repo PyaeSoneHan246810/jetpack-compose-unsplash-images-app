@@ -10,6 +10,7 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.animateZoomBy
 import androidx.compose.foundation.gestures.rememberTransformableState
@@ -20,9 +21,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -52,8 +58,10 @@ import com.example.unsplashgallery.presentation.common.components.AnimatedLoadin
 import com.example.unsplashgallery.presentation.common.components.ImageDownloadOption
 import com.example.unsplashgallery.presentation.common.components.ImageDownloadOptionsModalBottomSheet
 import com.example.unsplashgallery.presentation.full_image_display.component.FullImageDisplayTopAppBar
+import com.example.unsplashgallery.utils.SnackBarEvent
 import com.example.unsplashgallery.utils.rememberWindowInsetsControllerCompat
 import com.example.unsplashgallery.utils.toggleSystemBarsVisibility
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlin.math.max
 
@@ -63,6 +71,7 @@ import kotlin.math.max
 fun FullImageDisplayScreen(
     modifier: Modifier = Modifier,
     unsplashImage: UnsplashImage?,
+    snackBarEventFlow: Flow<SnackBarEvent>,
     onNavigateUp: () -> Unit,
     onPhotographerInfoClick: (profileLink: String) -> Unit,
     onDownloadOptionClick: (url: String, title: String?) -> Unit,
@@ -129,6 +138,16 @@ fun FullImageDisplayScreen(
     }
     //downloading toast message
     val downloadingToastMessage = stringResource(R.string.downloading)
+    //error snack bar state
+    val snackBarHostState = SnackbarHostState()
+    LaunchedEffect(key1 = true) {
+        snackBarEventFlow.collect { event ->
+            snackBarHostState.showSnackbar(
+                message = event.message,
+                duration = event.duration
+            )
+        }
+    }
     //back handler
     BackHandler {
         if (isModalBottomSheetVisible) {
@@ -146,6 +165,21 @@ fun FullImageDisplayScreen(
         modifier = Modifier
             .fillMaxSize()
             .then(modifier),
+        snackbarHost = {
+            SnackbarHost(
+                hostState = snackBarHostState,
+                snackbar = {
+                    Snackbar(
+                        modifier = Modifier
+                            .padding(bottom = 32.dp),
+                        snackbarData = it,
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                        shape = RoundedCornerShape(12.dp),
+                    )
+                }
+            )
+        }
     ) {
         Surface(
             modifier = Modifier
@@ -153,7 +187,15 @@ fun FullImageDisplayScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxSize(),
+                    .fillMaxSize()
+                    .clickable {
+                        isTopAppBarVisible = !isTopAppBarVisible
+                        isSetWallpaperButtonVisible = !isSetWallpaperButtonVisible
+                        isSystemBarsVisible = !isSystemBarsVisible
+                        windowInsetsControllerCompact.toggleSystemBarsVisibility(
+                            visible = isSystemBarsVisible
+                        )
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 //top app bar

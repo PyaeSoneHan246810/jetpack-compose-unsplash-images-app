@@ -9,6 +9,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,6 +17,9 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Snackbar
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
@@ -29,39 +33,54 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.unsplashgallery.R
 import com.example.unsplashgallery.domain.model.UnsplashImage
 import com.example.unsplashgallery.presentation.common.components.MainTopAppBar
 import com.example.unsplashgallery.presentation.common.components.PreviewImageCard
 import com.example.unsplashgallery.presentation.common.components.UnsplashImageCardGrids
-import com.example.unsplashgallery.presentation.theme.AppTheme
+import com.example.unsplashgallery.utils.SnackBarEvent
 import com.example.unsplashgallery.utils.rememberWindowInsetsControllerCompat
 import com.example.unsplashgallery.utils.toggleSystemBarsVisibility
+import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
     unsplashImages: List<UnsplashImage>,
+    snackBarEventFlow: Flow<SnackBarEvent>,
     onImageCardClick: (imageId: String) -> Unit,
     onSearchIconButtonClick: () -> Unit,
     onFavoritesFabClick: () -> Unit,
 ) {
+    //system bar visibility
     val windowInsetsControllerCompact = rememberWindowInsetsControllerCompat()
     LaunchedEffect(key1 = Unit) {
         windowInsetsControllerCompact.toggleSystemBarsVisibility(
             visible = true
         )
     }
+    //top app bar scroll behavior
     val topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    //preview image state
     var isPreviewImageCardVisible by rememberSaveable {
         mutableStateOf(false)
     }
     var previewImage by remember {
         mutableStateOf<UnsplashImage?>(null)
     }
+    //error snack bar state
+    val snackBarHostState = SnackbarHostState()
+    LaunchedEffect(key1 = true) {
+        snackBarEventFlow.collect { event ->
+            snackBarHostState.showSnackbar(
+                message = event.message,
+                duration = event.duration
+            )
+        }
+    }
+    //screen content
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -91,6 +110,21 @@ fun HomeScreen(
                         contentDescription = stringResource(R.string.favorites)
                     )
                 }
+            },
+            snackbarHost = {
+                SnackbarHost(
+                    hostState = snackBarHostState,
+                    snackbar = {
+                        Snackbar(
+                            modifier = Modifier
+                                .padding(bottom = 32.dp),
+                            snackbarData = it,
+                            containerColor = MaterialTheme.colorScheme.primaryContainer,
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                            shape = RoundedCornerShape(12.dp),
+                        )
+                    }
+                )
             }
         ) { paddingValues ->
             Surface(
@@ -149,32 +183,5 @@ fun HomeScreen(
                 )
             }
         }
-    }
-}
-
-@Preview
-@Composable
-private fun HomeScreenPrev() {
-    AppTheme {
-        HomeScreen(
-            unsplashImages = listOf(
-                UnsplashImage(
-                    id = "id",
-                    imageUrlSmall = stringResource(R.string.url_placeholder),
-                    imageUrlRegular = stringResource(R.string.url_placeholder),
-                    imageUrlRaw = stringResource(R.string.url_placeholder),
-                    photographerName = "Name",
-                    photographerUsername = "Username",
-                    photographerProfileImageUrl = stringResource(R.string.url_placeholder),
-                    photographerProfileLink = stringResource(R.string.url_placeholder),
-                    width = 5245,
-                    height = 3497,
-                    description = "Description..."
-                )
-            ),
-            onImageCardClick = {},
-            onSearchIconButtonClick = {},
-            onFavoritesFabClick = {}
-        )
     }
 }

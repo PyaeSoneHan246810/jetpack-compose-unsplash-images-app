@@ -32,8 +32,10 @@ fun MainNavGraph(
         composable<Destination.Home> {
             val homeViewModel = hiltViewModel<HomeViewModel>()
             val unsplashImages by homeViewModel.unsplashImages.collectAsState()
+            val snackBarEventFlow = homeViewModel.snackBarEvent
             HomeScreen(
                 unsplashImages = unsplashImages,
+                snackBarEventFlow = snackBarEventFlow,
                 onImageCardClick = { imageId ->
                     navHostController.navigate(
                         Destination.FullImageDisplay(
@@ -65,8 +67,10 @@ fun MainNavGraph(
         composable<Destination.FullImageDisplay> {
             val fullImageDisplayViewModel = hiltViewModel<FullImageDisplayViewModel>()
             val unsplashImage by fullImageDisplayViewModel.unsplashImage.collectAsState()
+            val snackBarEventFlow = fullImageDisplayViewModel.snackBarEvent
             FullImageDisplayScreen(
                 unsplashImage = unsplashImage,
+                snackBarEventFlow = snackBarEventFlow,
                 onNavigateUp = {
                     navHostController.navigateUp()
                 },
