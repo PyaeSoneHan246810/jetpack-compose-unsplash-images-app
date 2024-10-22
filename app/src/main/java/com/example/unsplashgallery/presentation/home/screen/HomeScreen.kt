@@ -80,6 +80,10 @@ fun HomeScreen(
             },
             floatingActionButton = {
                 FloatingActionButton(
+                    modifier = Modifier
+                        .padding(
+                            bottom = 20.dp
+                        ),
                     onClick = onFavoritesFabClick
                 ) {
                     Icon(

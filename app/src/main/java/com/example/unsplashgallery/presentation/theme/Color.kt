@@ -2,6 +2,9 @@ package com.example.unsplashgallery.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
+val green = Color(0xFF7EBF82)
+val red = Color(0xFFFF6E66)
+
 val primaryLight = Color(0xFF4C5C92)
 val onPrimaryLight = Color(0xFFFFFFFF)
 val primaryContainerLight = Color(0xFFDCE1FF)

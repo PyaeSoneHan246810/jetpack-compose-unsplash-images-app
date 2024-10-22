@@ -2,12 +2,14 @@ package com.example.unsplashgallery.di
 
 import android.content.Context
 import com.example.unsplashgallery.data.remote.api.UnsplashApiService
-import com.example.unsplashgallery.data.repository.ImageFileDownloaderImpl
+import com.example.unsplashgallery.data.repository.ImageDownloadManagerImpl
 import com.example.unsplashgallery.data.repository.ImageRepositoryImpl
 import com.example.unsplashgallery.data.repository.ImageWallpaperManagerImpl
-import com.example.unsplashgallery.domain.repository.ImageFileDownloader
+import com.example.unsplashgallery.data.repository.NetworkConnectivityManagerImpl
+import com.example.unsplashgallery.domain.repository.ImageDownloadManager
 import com.example.unsplashgallery.domain.repository.ImageRepository
 import com.example.unsplashgallery.domain.repository.ImageWallpaperManager
+import com.example.unsplashgallery.domain.repository.NetworkConnectivityManager
 import com.example.unsplashgallery.utils.Constants
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -15,6 +17,9 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
@@ -50,10 +55,10 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideImageFileDownloader(
+    fun provideImageDownloadManager(
         @ApplicationContext context: Context
-    ): ImageFileDownloader {
-        return ImageFileDownloaderImpl(
+    ): ImageDownloadManager {
+        return ImageDownloadManagerImpl(
             context = context
         )
     }
@@ -66,5 +71,23 @@ object AppModule {
         return ImageWallpaperManagerImpl(
             context = context
         )
+    }
+
+    @Provides
+    @Singleton
+    fun providesNetworkConnectivityManager(
+        @ApplicationContext context: Context,
+        scope: CoroutineScope
+    ): NetworkConnectivityManager {
+        return NetworkConnectivityManagerImpl(
+            context = context,
+            scope = scope,
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideApplicationScope(): CoroutineScope {
+        return CoroutineScope(SupervisorJob() + Dispatchers.Default)
     }
 }

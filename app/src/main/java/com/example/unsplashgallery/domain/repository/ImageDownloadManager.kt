@@ -1,5 +1,5 @@
 package com.example.unsplashgallery.domain.repository
 
-interface ImageFileDownloader {
+interface ImageDownloadManager {
     fun downloadImageFile(url: String, fileName: String?)
 }

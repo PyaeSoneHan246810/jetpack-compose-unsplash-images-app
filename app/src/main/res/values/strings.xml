@@ -12,4 +12,6 @@
     <string name="downloading">Downloading....</string>
     <string name="wallpaper_image">Wallpaper Image</string>
     <string name="confirm">Confirm</string>
+    <string name="connected">Connected to internet.</string>
+    <string name="disconnected">No internet connection.</string>
 </resources>
