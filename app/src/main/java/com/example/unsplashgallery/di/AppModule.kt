@@ -2,7 +2,7 @@ package com.example.unsplashgallery.di
 
 import android.content.Context
 import com.example.unsplashgallery.data.remote.api.UnsplashApiService
-import com.example.unsplashgallery.data.repository.ImageImageFileDownloaderImpl
+import com.example.unsplashgallery.data.repository.ImageFileDownloaderImpl
 import com.example.unsplashgallery.data.repository.ImageRepositoryImpl
 import com.example.unsplashgallery.data.repository.ImageWallpaperManagerImpl
 import com.example.unsplashgallery.domain.repository.ImageFileDownloader
@@ -53,7 +53,7 @@ object AppModule {
     fun provideImageFileDownloader(
         @ApplicationContext context: Context
     ): ImageFileDownloader {
-        return ImageImageFileDownloaderImpl(
+        return ImageFileDownloaderImpl(
             context = context
         )
     }

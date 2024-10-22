@@ -7,7 +7,7 @@ import androidx.core.net.toUri
 import com.example.unsplashgallery.domain.repository.ImageFileDownloader
 import java.io.File
 
-class ImageImageFileDownloaderImpl(
+class ImageFileDownloaderImpl(
     context: Context
 ): ImageFileDownloader {
     private val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
