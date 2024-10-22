@@ -75,8 +75,8 @@ fun MainNavGraph(
                         )
                     )
                 },
-                onDownloadOptionClick = { option ->
-
+                onDownloadOptionClick = { url, title ->
+                    fullImageDisplayViewModel.downloadImage(url, title)
                 }
             )
         }

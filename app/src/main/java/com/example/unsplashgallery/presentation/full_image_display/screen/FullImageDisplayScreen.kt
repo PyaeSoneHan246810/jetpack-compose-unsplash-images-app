@@ -1,6 +1,7 @@
 package com.example.unsplashgallery.presentation.full_image_display.screen
 
 import android.annotation.SuppressLint
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -37,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
@@ -59,8 +61,10 @@ fun FullImageDisplayScreen(
     unsplashImage: UnsplashImage?,
     onNavigateUp: () -> Unit,
     onPhotographerInfoClick: (profileLink: String) -> Unit,
-    onDownloadOptionClick: (option: ImageDownloadOption) -> Unit
+    onDownloadOptionClick: (url: String, title: String?) -> Unit
 ) {
+    //context
+    val context = LocalContext.current
     //coroutine scope
     val scope = rememberCoroutineScope()
     //top app bar & system bar visibility
@@ -117,6 +121,8 @@ fun FullImageDisplayScreen(
     val imageInteractionSource = remember {
         MutableInteractionSource()
     }
+    //downloading toast message
+    val downloadingToastMessage = stringResource(R.string.downloading)
     BackHandler {
         if (isModalBottomSheetVisible) {
             scope.launch {
@@ -235,7 +241,21 @@ fun FullImageDisplayScreen(
                             }.invokeOnCompletion {
                                 isModalBottomSheetVisible = false
                             }
-                            onDownloadOptionClick(option)
+                            unsplashImage?.let { image ->
+                                val url = when(option) {
+                                    ImageDownloadOption.SMALL_SIZE -> {
+                                        image.imageUrlSmall
+                                    }
+                                    ImageDownloadOption.MEDIUM_SIZE -> {
+                                        image.imageUrlRegular
+                                    }
+                                    ImageDownloadOption.ORIGINAL_SIZE -> {
+                                        image.imageUrlRaw
+                                    }
+                                }
+                                onDownloadOptionClick(url, image.description?.take(20))
+                                Toast.makeText(context, downloadingToastMessage, Toast.LENGTH_SHORT).show()
+                            }
                         }
                     )
                 }
