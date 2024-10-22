@@ -16,6 +16,8 @@ import com.example.unsplashgallery.presentation.home.screen.HomeScreen
 import com.example.unsplashgallery.presentation.home.view_model.HomeViewModel
 import com.example.unsplashgallery.presentation.photographer_profile.screen.PhotographerProfileScreen
 import com.example.unsplashgallery.presentation.search.screen.SearchScreen
+import com.example.unsplashgallery.presentation.set_wallpaper.screen.SetWallpaperScreen
+import com.example.unsplashgallery.presentation.set_wallpaper.view_model.SetWallpaperViewModel
 
 @Composable
 fun MainNavGraph(
@@ -77,6 +79,25 @@ fun MainNavGraph(
                 },
                 onDownloadOptionClick = { url, title ->
                     fullImageDisplayViewModel.downloadImage(url, title)
+                },
+                onSetWallpaperButtonClick = { url ->
+                    navHostController.navigate(
+                        Destination.SetWallpaper(
+                            imageUrl = url
+                        )
+                    )
+                }
+            )
+        }
+        composable<Destination.SetWallpaper> { navBackStackEntry ->
+            val destination = navBackStackEntry.toRoute<Destination.SetWallpaper>()
+            val imageUrl = destination.imageUrl
+            val setWallpaperViewModel = hiltViewModel<SetWallpaperViewModel>()
+            SetWallpaperScreen(
+                imageUrl = imageUrl,
+                onConfirmClick = { url ->
+                    setWallpaperViewModel.setImageWallpaper(url)
+                    navHostController.navigateUp()
                 }
             )
         }

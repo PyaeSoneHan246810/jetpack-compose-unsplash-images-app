@@ -14,6 +14,10 @@ sealed class Destination {
         val imageId: String
     ): Destination()
     @Serializable
+    data class SetWallpaper(
+        val imageUrl: String
+    ): Destination()
+    @Serializable
     data class PhotographerProfile(
         val profileLink: String
     ): Destination()

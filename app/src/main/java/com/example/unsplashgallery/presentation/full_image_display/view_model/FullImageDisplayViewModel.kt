@@ -5,10 +5,11 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.example.unsplashgallery.domain.model.UnsplashImage
-import com.example.unsplashgallery.domain.repository.Downloader
+import com.example.unsplashgallery.domain.repository.ImageFileDownloader
 import com.example.unsplashgallery.domain.repository.ImageRepository
 import com.example.unsplashgallery.presentation.navigation.Destination
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -18,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class FullImageDisplayViewModel @Inject constructor(
     private val imageRepository: ImageRepository,
-    private val downloader: Downloader,
+    private val imageFileDownloader: ImageFileDownloader,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val destination = savedStateHandle.toRoute<Destination.FullImageDisplay>()
@@ -33,7 +34,7 @@ class FullImageDisplayViewModel @Inject constructor(
     }
 
     private fun getUnsplashImage() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 val unsplashImageResult = imageRepository.getSingleImage(
                     imageId = imageId
@@ -46,9 +47,9 @@ class FullImageDisplayViewModel @Inject constructor(
     }
 
     fun downloadImage(url: String, title: String?) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
-                downloader.downloadFile(url, title)
+                imageFileDownloader.downloadImageFile(url, title)
             } catch (e: Exception) {
                 e.printStackTrace()
             }

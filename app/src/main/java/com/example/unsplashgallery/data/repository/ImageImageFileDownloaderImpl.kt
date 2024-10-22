@@ -4,15 +4,15 @@ import android.app.DownloadManager
 import android.content.Context
 import android.os.Environment
 import androidx.core.net.toUri
-import com.example.unsplashgallery.domain.repository.Downloader
+import com.example.unsplashgallery.domain.repository.ImageFileDownloader
 import java.io.File
 
-class ImageDownloader(
+class ImageImageFileDownloaderImpl(
     context: Context
-): Downloader {
+): ImageFileDownloader {
     private val downloadManager = context.getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
 
-    override fun downloadFile(url: String, fileName: String?) {
+    override fun downloadImageFile(url: String, fileName: String?) {
         try {
             val title = fileName ?: "New Image"
             val request = DownloadManager

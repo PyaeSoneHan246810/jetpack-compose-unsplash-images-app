@@ -18,6 +18,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -40,6 +43,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import com.example.unsplashgallery.R
@@ -61,14 +65,18 @@ fun FullImageDisplayScreen(
     unsplashImage: UnsplashImage?,
     onNavigateUp: () -> Unit,
     onPhotographerInfoClick: (profileLink: String) -> Unit,
-    onDownloadOptionClick: (url: String, title: String?) -> Unit
+    onDownloadOptionClick: (url: String, title: String?) -> Unit,
+    onSetWallpaperButtonClick: (url: String) -> Unit
 ) {
     //context
     val context = LocalContext.current
     //coroutine scope
     val scope = rememberCoroutineScope()
-    //top app bar & system bar visibility
+    //visibility states
     var isTopAppBarVisible by rememberSaveable {
+        mutableStateOf(false)
+    }
+    var isSetWallpaperButtonVisible by rememberSaveable {
         mutableStateOf(false)
     }
     var isSystemBarsVisible by rememberSaveable {
@@ -80,12 +88,11 @@ fun FullImageDisplayScreen(
             visible = isSystemBarsVisible
         )
     }
-    //modal bottom sheet visibility
     val modalBottomSheetState = rememberModalBottomSheetState()
     var isModalBottomSheetVisible by rememberSaveable {
         mutableStateOf(false)
     }
-    //image loading and error
+    //image states
     var isLoadingImage by rememberSaveable {
         mutableStateOf(true)
     }
@@ -99,7 +106,6 @@ fun FullImageDisplayScreen(
             isErrorImage = state is AsyncImagePainter.State.Error
         },
     )
-    //image zooming
     var scale by rememberSaveable {
         mutableFloatStateOf(1f)
     }
@@ -123,6 +129,7 @@ fun FullImageDisplayScreen(
     }
     //downloading toast message
     val downloadingToastMessage = stringResource(R.string.downloading)
+    //back handler
     BackHandler {
         if (isModalBottomSheetVisible) {
             scope.launch {
@@ -211,6 +218,7 @@ fun FullImageDisplayScreen(
                                 },
                                 onClick = {
                                     isTopAppBarVisible = !isTopAppBarVisible
+                                    isSetWallpaperButtonVisible = !isSetWallpaperButtonVisible
                                     isSystemBarsVisible = !isSystemBarsVisible
                                     windowInsetsControllerCompact.toggleSystemBarsVisibility(
                                         visible = isSystemBarsVisible
@@ -223,6 +231,34 @@ fun FullImageDisplayScreen(
                         contentDescription = unsplashImage?.description,
                         contentScale = ContentScale.FillBounds
                     )
+                }
+                AnimatedVisibility(
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter),
+                    visible = isSetWallpaperButtonVisible,
+                    enter = slideInVertically(
+                        initialOffsetY = { it / 2 }
+                    ) + fadeIn(),
+                    exit = slideOutVertically(
+                        targetOffsetY = { it / 2 }
+                    ) + fadeOut()
+                ) {
+                    Button(
+                        modifier = Modifier
+                            .padding(
+                                bottom = 12.dp
+                            )
+                            .navigationBarsPadding(),
+                        onClick = {
+                            unsplashImage?.let { image ->
+                                onSetWallpaperButtonClick(image.imageUrlRaw)
+                            }
+                        }
+                    ) {
+                        Text(
+                            text = "Set Wallpaper"
+                        )
+                    }
                 }
                 //modal bottom sheet
                 if (isModalBottomSheetVisible) {

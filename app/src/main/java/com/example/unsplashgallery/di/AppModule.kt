@@ -2,10 +2,12 @@ package com.example.unsplashgallery.di
 
 import android.content.Context
 import com.example.unsplashgallery.data.remote.api.UnsplashApiService
-import com.example.unsplashgallery.data.repository.ImageDownloader
+import com.example.unsplashgallery.data.repository.ImageImageFileDownloaderImpl
 import com.example.unsplashgallery.data.repository.ImageRepositoryImpl
-import com.example.unsplashgallery.domain.repository.Downloader
+import com.example.unsplashgallery.data.repository.ImageWallpaperManagerImpl
+import com.example.unsplashgallery.domain.repository.ImageFileDownloader
 import com.example.unsplashgallery.domain.repository.ImageRepository
+import com.example.unsplashgallery.domain.repository.ImageWallpaperManager
 import com.example.unsplashgallery.utils.Constants
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Module
@@ -48,10 +50,20 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideDownloader(
+    fun provideImageFileDownloader(
         @ApplicationContext context: Context
-    ): Downloader {
-        return ImageDownloader(
+    ): ImageFileDownloader {
+        return ImageImageFileDownloaderImpl(
+            context = context
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideImageWallpaperManager(
+        @ApplicationContext context: Context
+    ): ImageWallpaperManager {
+        return ImageWallpaperManagerImpl(
             context = context
         )
     }

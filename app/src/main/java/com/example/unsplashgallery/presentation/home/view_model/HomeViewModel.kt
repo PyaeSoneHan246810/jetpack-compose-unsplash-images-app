@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.unsplashgallery.domain.model.UnsplashImage
 import com.example.unsplashgallery.domain.repository.ImageRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,7 +24,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun getUnsplashImages() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             try {
                 val unsplashImagesResult = imageRepository.getEditorialFeedImages()
                 _unsplashImages.value = unsplashImagesResult

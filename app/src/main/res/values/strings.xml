@@ -10,4 +10,6 @@
     <string name="url_placeholder">https://placehold.co/400</string>
     <string name="image_loading_error">Unable to load the image.</string>
     <string name="downloading">Downloading....</string>
+    <string name="wallpaper_image">Wallpaper Image</string>
+    <string name="confirm">Confirm</string>
 </resources>
