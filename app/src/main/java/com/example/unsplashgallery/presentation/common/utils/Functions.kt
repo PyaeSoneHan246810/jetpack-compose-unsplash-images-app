@@ -1,4 +1,4 @@
-package com.example.unsplashgallery.utils
+package com.example.unsplashgallery.presentation.common.utils
 
 import android.app.Activity
 import androidx.compose.runtime.Composable

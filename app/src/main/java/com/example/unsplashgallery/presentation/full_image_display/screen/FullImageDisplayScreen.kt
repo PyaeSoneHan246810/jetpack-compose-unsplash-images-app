@@ -57,10 +57,10 @@ import com.example.unsplashgallery.domain.model.UnsplashImage
 import com.example.unsplashgallery.presentation.common.components.AnimatedLoadingIndicator
 import com.example.unsplashgallery.presentation.common.components.ImageDownloadOption
 import com.example.unsplashgallery.presentation.common.components.ImageDownloadOptionsModalBottomSheet
+import com.example.unsplashgallery.presentation.common.utils.SnackBarEvent
+import com.example.unsplashgallery.presentation.common.utils.rememberWindowInsetsControllerCompat
+import com.example.unsplashgallery.presentation.common.utils.toggleSystemBarsVisibility
 import com.example.unsplashgallery.presentation.full_image_display.component.FullImageDisplayTopAppBar
-import com.example.unsplashgallery.utils.SnackBarEvent
-import com.example.unsplashgallery.utils.rememberWindowInsetsControllerCompat
-import com.example.unsplashgallery.utils.toggleSystemBarsVisibility
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import kotlin.math.max
@@ -92,7 +92,7 @@ fun FullImageDisplayScreen(
         mutableStateOf(false)
     }
     val windowInsetsControllerCompact = rememberWindowInsetsControllerCompat()
-    LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(key1 = true) {
         windowInsetsControllerCompact.toggleSystemBarsVisibility(
             visible = isSystemBarsVisible
         )
@@ -139,7 +139,9 @@ fun FullImageDisplayScreen(
     //downloading toast message
     val downloadingToastMessage = stringResource(R.string.downloading)
     //error snack bar state
-    val snackBarHostState = SnackbarHostState()
+    val snackBarHostState = remember {
+        SnackbarHostState()
+    }
     LaunchedEffect(key1 = true) {
         snackBarEventFlow.collect { event ->
             snackBarHostState.showSnackbar(

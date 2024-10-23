@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.unsplashgallery.domain.model.UnsplashImage
 import com.example.unsplashgallery.domain.repository.ImageRepository
-import com.example.unsplashgallery.utils.SnackBarEvent
+import com.example.unsplashgallery.presentation.common.utils.SnackBarEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -47,7 +47,7 @@ class HomeViewModel @Inject constructor(
                 e.printStackTrace()
                 _snackBarEvent.send(
                     SnackBarEvent(
-                        message = "Unable to load image."
+                        message = "Unable to load images."
                     )
                 )
             }

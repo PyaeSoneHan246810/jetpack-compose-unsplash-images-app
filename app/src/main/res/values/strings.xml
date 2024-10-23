@@ -14,4 +14,17 @@
     <string name="confirm">Confirm</string>
     <string name="connected">Connected to internet.</string>
     <string name="disconnected">No internet connection.</string>
+    <string name="clear">Clear</string>
+    <string name="search_images">Search Images</string>
+    <!--search suggestions-->
+    <string name="landscape">Landscape</string>
+    <string name="portrait">Portrait</string>
+    <string name="nature">Nature</string>
+    <string name="architecture">Architecture</string>
+    <string name="travel">Travel</string>
+    <string name="food">Food</string>
+    <string name="animals">Animals</string>
+    <string name="abstract_suggestion">Abstract</string>
+    <string name="technology">Technology</string>
+    <string name="fashion">Fashion</string>
 </resources>

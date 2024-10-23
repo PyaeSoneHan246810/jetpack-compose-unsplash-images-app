@@ -7,8 +7,8 @@ import androidx.navigation.toRoute
 import com.example.unsplashgallery.domain.model.UnsplashImage
 import com.example.unsplashgallery.domain.repository.ImageDownloadManager
 import com.example.unsplashgallery.domain.repository.ImageRepository
+import com.example.unsplashgallery.presentation.common.utils.SnackBarEvent
 import com.example.unsplashgallery.presentation.navigation.Destination
-import com.example.unsplashgallery.utils.SnackBarEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel

@@ -39,9 +39,9 @@ import com.example.unsplashgallery.domain.model.UnsplashImage
 import com.example.unsplashgallery.presentation.common.components.MainTopAppBar
 import com.example.unsplashgallery.presentation.common.components.PreviewImageCard
 import com.example.unsplashgallery.presentation.common.components.UnsplashImageCardGrids
-import com.example.unsplashgallery.utils.SnackBarEvent
-import com.example.unsplashgallery.utils.rememberWindowInsetsControllerCompat
-import com.example.unsplashgallery.utils.toggleSystemBarsVisibility
+import com.example.unsplashgallery.presentation.common.utils.SnackBarEvent
+import com.example.unsplashgallery.presentation.common.utils.rememberWindowInsetsControllerCompat
+import com.example.unsplashgallery.presentation.common.utils.toggleSystemBarsVisibility
 import kotlinx.coroutines.flow.Flow
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -56,7 +56,7 @@ fun HomeScreen(
 ) {
     //system bar visibility
     val windowInsetsControllerCompact = rememberWindowInsetsControllerCompat()
-    LaunchedEffect(key1 = Unit) {
+    LaunchedEffect(key1 = true) {
         windowInsetsControllerCompact.toggleSystemBarsVisibility(
             visible = true
         )
@@ -71,7 +71,9 @@ fun HomeScreen(
         mutableStateOf<UnsplashImage?>(null)
     }
     //error snack bar state
-    val snackBarHostState = SnackbarHostState()
+    val snackBarHostState = remember {
+        SnackbarHostState()
+    }
     LaunchedEffect(key1 = true) {
         snackBarEventFlow.collect { event ->
             snackBarHostState.showSnackbar(

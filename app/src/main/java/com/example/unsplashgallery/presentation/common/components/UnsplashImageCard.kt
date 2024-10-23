@@ -22,16 +22,16 @@ import com.example.unsplashgallery.domain.model.UnsplashImage
 @Composable
 fun UnsplashImageCard(
     modifier: Modifier = Modifier,
-    unsplashImage: UnsplashImage,
+    unsplashImage: UnsplashImage?,
     onClick: (imageId: String) -> Unit,
-    onImageCardDragStart: (previewImage: UnsplashImage) -> Unit,
+    onImageCardDragStart: (previewImage: UnsplashImage?) -> Unit,
     onImageCardDragEnd: () -> Unit,
     onImageCardDragCancel: () -> Unit,
 ) {
     val context = LocalContext.current
     val imageCardAspectRadio by remember {
         derivedStateOf {
-            unsplashImage.width.toFloat() / unsplashImage.height.toFloat()
+            ((unsplashImage?.width ?: 1).toFloat() / (unsplashImage?.height ?: 1).toFloat())
         }
     }
     Card(
@@ -51,7 +51,9 @@ fun UnsplashImageCard(
             },
         shape = RoundedCornerShape(12.dp),
         onClick = {
-            onClick(unsplashImage.id)
+            unsplashImage?.let {
+                onClick(it.id)
+            }
         },
     ) {
         AsyncImage(
@@ -59,10 +61,10 @@ fun UnsplashImageCard(
                 .fillMaxSize(),
             model = ImageRequest
                 .Builder(context)
-                .data(unsplashImage.imageUrlSmall)
+                .data(unsplashImage?.imageUrlSmall)
                 .crossfade(true)
                 .build(),
-            contentDescription = unsplashImage.description,
+            contentDescription = unsplashImage?.description,
             contentScale = ContentScale.FillBounds,
         )
     }

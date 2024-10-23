@@ -9,6 +9,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
+import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.unsplashgallery.presentation.favorites.screen.FavoritesScreen
 import com.example.unsplashgallery.presentation.full_image_display.screen.FullImageDisplayScreen
 import com.example.unsplashgallery.presentation.full_image_display.view_model.FullImageDisplayViewModel
@@ -16,6 +17,7 @@ import com.example.unsplashgallery.presentation.home.screen.HomeScreen
 import com.example.unsplashgallery.presentation.home.view_model.HomeViewModel
 import com.example.unsplashgallery.presentation.photographer_profile.screen.PhotographerProfileScreen
 import com.example.unsplashgallery.presentation.search.screen.SearchScreen
+import com.example.unsplashgallery.presentation.search.view_model.SearchViewModel
 import com.example.unsplashgallery.presentation.set_wallpaper.screen.SetWallpaperScreen
 import com.example.unsplashgallery.presentation.set_wallpaper.view_model.SetWallpaperViewModel
 
@@ -52,7 +54,36 @@ fun MainNavGraph(
             )
         }
         composable<Destination.Search> {
-            SearchScreen()
+            val searchViewModel = hiltViewModel<SearchViewModel>()
+            val searchScreenState by searchViewModel.searchScreenState.collectAsState()
+            val unsplashImages = searchScreenState.searchResults?.collectAsLazyPagingItems()
+            val snackBarEventFlow = searchViewModel.snackBarEvent
+            SearchScreen(
+                searchQuery = searchScreenState.searchQuery,
+                unsplashImages = unsplashImages,
+                snackBarEventFlow = snackBarEventFlow,
+                onSearchQueryValueChanged = { newQuery ->
+                    searchViewModel.updateSearchQuery(
+                        newQuery = newQuery
+                    )
+                },
+                onSearch = {
+                    searchViewModel.getSearchImages()
+                },
+                onImageCardClick = { imageId ->
+                    navHostController.navigate(
+                        Destination.FullImageDisplay(
+                            imageId = imageId
+                        )
+                    )
+                },
+                onFavoritesFabClick = {
+                    navHostController.navigate(Destination.Favorites)
+                },
+                onNavigateUp = {
+                    navHostController.navigateUp()
+                }
+            )
         }
         composable<Destination.Favorites> {
             FavoritesScreen(
