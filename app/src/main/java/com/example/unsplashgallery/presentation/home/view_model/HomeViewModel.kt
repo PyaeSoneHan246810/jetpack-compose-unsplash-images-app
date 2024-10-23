@@ -6,7 +6,6 @@ import com.example.unsplashgallery.domain.model.UnsplashImage
 import com.example.unsplashgallery.domain.repository.ImageRepository
 import com.example.unsplashgallery.presentation.common.utils.SnackBarEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +31,7 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun getUnsplashImages() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             try {
                 val unsplashImagesResult = imageRepository.getEditorialFeedImages()
                 _unsplashImages.value = unsplashImagesResult

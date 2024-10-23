@@ -10,7 +10,6 @@ import com.example.unsplashgallery.domain.repository.ImageRepository
 import com.example.unsplashgallery.presentation.common.utils.SnackBarEvent
 import com.example.unsplashgallery.presentation.navigation.Destination
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -42,7 +41,7 @@ class FullImageDisplayViewModel @Inject constructor(
     }
 
     private fun getUnsplashImage() {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             try {
                 val unsplashImageResult = imageRepository.getSingleImage(
                     imageId = imageId
@@ -67,7 +66,7 @@ class FullImageDisplayViewModel @Inject constructor(
     }
 
     fun downloadImage(url: String, title: String?) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             try {
                 imageDownloadManager.downloadImageFile(url, title)
             } catch (e: UnknownHostException) {

@@ -19,7 +19,7 @@ class ImageRepositoryImpl(
 
     override suspend fun getSingleImage(imageId: String): UnsplashImage = unsplashApiService.getSingleImage(imageId).toDomainModel()
 
-    override suspend fun getSearchImages(query: String): Flow<PagingData<UnsplashImage>> {
+    override fun getSearchImages(query: String): Flow<PagingData<UnsplashImage>> {
         val pager = Pager(
             config = PagingConfig(
                 pageSize = Constants.IMAGES_PER_PAGE,

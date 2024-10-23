@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.unsplashgallery.domain.repository.ImageWallpaperManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -13,7 +12,7 @@ class SetWallpaperViewModel @Inject constructor(
     private val imageWallpaperManager: ImageWallpaperManager
 ): ViewModel() {
     fun setImageWallpaper(imageUrl: String) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             try {
                 imageWallpaperManager.setImageWallpaper(imageUrl)
             } catch (e: Exception) {

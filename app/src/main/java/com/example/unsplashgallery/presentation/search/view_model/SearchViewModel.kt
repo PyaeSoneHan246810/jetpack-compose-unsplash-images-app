@@ -7,7 +7,6 @@ import com.example.unsplashgallery.domain.repository.ImageRepository
 import com.example.unsplashgallery.presentation.common.utils.SnackBarEvent
 import com.example.unsplashgallery.presentation.search.state.SearchScreenState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,22 +34,24 @@ class SearchViewModel @Inject constructor(
     }
 
     fun getSearchImages() {
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                _searchScreenState.value = _searchScreenState.value.copy(
-                    searchResults = imagesRepository.getSearchImages(
-                        query = searchScreenState.value.searchQuery
-                    ).cachedIn(viewModelScope)
-                )
-            } catch (e: UnknownHostException) {
-                e.printStackTrace()
+        try {
+            _searchScreenState.value = _searchScreenState.value.copy(
+                searchResults = imagesRepository.getSearchImages(
+                    query = searchScreenState.value.searchQuery
+                ).cachedIn(viewModelScope)
+            )
+        } catch (e: UnknownHostException) {
+            e.printStackTrace()
+            viewModelScope.launch {
                 _snackBarEvent.send(
                     SnackBarEvent(
                         message = "Please check your internet connection."
                     )
                 )
-            } catch (e: Exception) {
-                e.printStackTrace()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            viewModelScope.launch {
                 _snackBarEvent.send(
                     SnackBarEvent(
                         message = "Unable to search images."
