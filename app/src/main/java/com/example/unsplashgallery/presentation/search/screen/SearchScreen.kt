@@ -5,6 +5,8 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -267,7 +269,9 @@ fun SearchScreen(
                             .height(12.dp)
                     )
                     AnimatedVisibility(
-                        visible = isSuggestionsVisible
+                        visible = isSuggestionsVisible,
+                        enter = slideInVertically() + fadeIn(),
+                        exit = slideOutVertically() + fadeOut()
                     ) {
                         LazyRow(
                             modifier = Modifier
@@ -309,6 +313,8 @@ fun SearchScreen(
                             .fillMaxWidth()
                             .weight(1f),
                         visible = unsplashImages == null,
+                        enter = scaleIn() + fadeIn(),
+                        exit = scaleOut() + fadeOut()
                     ) {
                         Box(
                             modifier = Modifier

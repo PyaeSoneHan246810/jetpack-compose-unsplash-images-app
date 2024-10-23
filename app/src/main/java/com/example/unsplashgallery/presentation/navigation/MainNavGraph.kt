@@ -130,9 +130,10 @@ fun MainNavGraph(
             val setWallpaperViewModel = hiltViewModel<SetWallpaperViewModel>()
             SetWallpaperScreen(
                 imageUrl = imageUrl,
+                isLoading = setWallpaperViewModel.isLoading,
+                snackBarEventFlow = setWallpaperViewModel.snackBarEvent,
                 onConfirmClick = { url ->
                     setWallpaperViewModel.setImageWallpaper(url)
-                    navHostController.navigateUp()
                 }
             )
         }

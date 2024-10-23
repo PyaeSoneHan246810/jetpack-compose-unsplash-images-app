@@ -6,6 +6,8 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -200,41 +202,30 @@ fun FullImageDisplayScreen(
                     },
                 contentAlignment = Alignment.Center
             ) {
-                //top app bar
-                AnimatedVisibility(
-                    modifier = Modifier
-                        .align(Alignment.TopCenter),
-                    visible = isTopAppBarVisible,
-                    enter = slideInVertically() + fadeIn(),
-                    exit = slideOutVertically() + fadeOut()
-                ) {
-                    FullImageDisplayTopAppBar(
-                        photographerProfileImageUrl = unsplashImage?.photographerProfileImageUrl,
-                        photographerName = unsplashImage?.photographerName,
-                        photographerUsername = unsplashImage?.photographerUsername,
-                        photographerProfileLink = unsplashImage?.photographerProfileLink,
-                        onArrowBackIconButtonClick = onNavigateUp,
-                        onDownloadIconButtonClick = {
-                            scope.launch {
-                                modalBottomSheetState.show()
-                            }.invokeOnCompletion {
-                                isModalBottomSheetVisible = true
-                            }
-                        },
-                        onPhotographerInfoClick = onPhotographerInfoClick
-                    )
-                }
                 //image loading indicator
-                if (isLoadingImage) {
+                AnimatedVisibility(
+                    visible = isLoadingImage,
+                    enter = scaleIn() + fadeIn(),
+                    exit = scaleOut() + fadeOut()
+                ) {
                     AnimatedLoadingIndicator()
                 }
-                if (isErrorImage) {
-                    //image error message
+                //image error message
+                AnimatedVisibility(
+                    visible = isErrorImage,
+                    enter = scaleIn() + fadeIn(),
+                    exit = scaleOut() + fadeOut()
+                ) {
                     Text(
                         text = stringResource(R.string.image_loading_error)
                     )
-                } else {
-                    //image
+                }
+                //image
+                AnimatedVisibility(
+                    visible = !isErrorImage,
+                    enter = scaleIn() + fadeIn(),
+                    exit = scaleOut() + fadeOut()
+                ) {
                     Image(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -276,6 +267,31 @@ fun FullImageDisplayScreen(
                         contentScale = ContentScale.FillBounds
                     )
                 }
+                //top app bar
+                AnimatedVisibility(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter),
+                    visible = isTopAppBarVisible,
+                    enter = slideInVertically() + fadeIn(),
+                    exit = slideOutVertically() + fadeOut()
+                ) {
+                    FullImageDisplayTopAppBar(
+                        photographerProfileImageUrl = unsplashImage?.photographerProfileImageUrl,
+                        photographerName = unsplashImage?.photographerName,
+                        photographerUsername = unsplashImage?.photographerUsername,
+                        photographerProfileLink = unsplashImage?.photographerProfileLink,
+                        onArrowBackIconButtonClick = onNavigateUp,
+                        onDownloadIconButtonClick = {
+                            scope.launch {
+                                modalBottomSheetState.show()
+                            }.invokeOnCompletion {
+                                isModalBottomSheetVisible = true
+                            }
+                        },
+                        onPhotographerInfoClick = onPhotographerInfoClick
+                    )
+                }
+                //set wallpaper button
                 AnimatedVisibility(
                     modifier = Modifier
                         .align(Alignment.BottomCenter),

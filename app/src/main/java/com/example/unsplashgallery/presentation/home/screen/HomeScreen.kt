@@ -160,9 +160,9 @@ fun HomeScreen(
         AnimatedVisibility(
             modifier = Modifier
                 .align(Alignment.Center),
+            visible = isPreviewImageCardVisible && previewImage != null,
             enter = scaleIn() + fadeIn(),
             exit = scaleOut() + fadeOut(),
-            visible = isPreviewImageCardVisible && previewImage != null
         ) {
             Box(
                 modifier = Modifier
