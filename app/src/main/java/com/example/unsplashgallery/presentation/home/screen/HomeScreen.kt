@@ -51,6 +51,7 @@ fun HomeScreen(
     unsplashImages: List<UnsplashImage>,
     snackBarEventFlow: Flow<SnackBarEvent>,
     onImageCardClick: (imageId: String) -> Unit,
+    onToggleFavoriteStatus: (image: UnsplashImage) -> Unit,
     onSearchIconButtonClick: () -> Unit,
     onFavoritesFabClick: () -> Unit,
 ) {
@@ -142,6 +143,7 @@ fun HomeScreen(
                     onImageCardClick = { imageId ->
                         if (!isPreviewImageCardVisible) onImageCardClick(imageId)
                     },
+                    onToggleFavoriteStatus = onToggleFavoriteStatus,
                     onImageCardDragStart = { image ->
                         isPreviewImageCardVisible = true
                         previewImage = image

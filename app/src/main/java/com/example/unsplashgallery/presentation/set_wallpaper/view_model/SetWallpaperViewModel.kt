@@ -13,6 +13,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
+import java.net.UnknownHostException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -26,17 +27,35 @@ class SetWallpaperViewModel @Inject constructor(
     val snackBarEvent: Flow<SnackBarEvent> = _snackBarEvent.receiveAsFlow()
 
     fun setImageWallpaper(imageUrl: String) {
-        isLoading = true
         viewModelScope.launch(Dispatchers.IO) {
+            isLoading = true
+            _snackBarEvent.send(
+                SnackBarEvent(
+                    message = "Applying the wallpaper."
+                )
+            )
             try {
                 imageWallpaperManager.setImageWallpaper(imageUrl)
                 isLoading = false
+                _snackBarEvent.send(
+                    SnackBarEvent(
+                        message = "Wallpaper is applied."
+                    )
+                )
+            } catch (e: UnknownHostException) {
+                e.printStackTrace()
+                isLoading = false
+                _snackBarEvent.send(
+                    SnackBarEvent(
+                        message = "Please check your internet connection."
+                    )
+                )
             } catch (e: Exception) {
                 e.printStackTrace()
                 isLoading = false
                 _snackBarEvent.send(
                     SnackBarEvent(
-                        message = "Unable to set wallpaper."
+                        message = "Unable to apply the wallpaper."
                     )
                 )
             }

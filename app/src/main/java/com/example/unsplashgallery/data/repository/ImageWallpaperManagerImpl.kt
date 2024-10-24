@@ -11,13 +11,9 @@ class ImageWallpaperManagerImpl(
 ): ImageWallpaperManager {
     private val wallpaperManager = WallpaperManager.getInstance(context)
     override fun setImageWallpaper(imageUrl: String) {
-        try {
-            val bitmap = BitmapFactory.decodeStream(
-                URL(imageUrl).openConnection().getInputStream()
-            )
-            wallpaperManager.setBitmap(bitmap)
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        val bitmap = BitmapFactory.decodeStream(
+            URL(imageUrl).openConnection().getInputStream()
+        )
+        wallpaperManager.setBitmap(bitmap)
     }
 }

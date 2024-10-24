@@ -19,6 +19,7 @@ fun UnsplashImageCardGrids(
     bottomContentPadding: Dp = 0.dp,
     unsplashImages: List<UnsplashImage>,
     onImageCardClick: (imageId: String) -> Unit,
+    onToggleFavoriteStatus: (image: UnsplashImage) -> Unit,
     onImageCardDragStart: (previewImage: UnsplashImage?) -> Unit,
     onImageCardDragEnd: () -> Unit,
     onImageCardDragCancel: () -> Unit
@@ -42,7 +43,11 @@ fun UnsplashImageCardGrids(
         ) { unsplashImage ->
             UnsplashImageCard(
                 unsplashImage = unsplashImage,
+                isFavorite = false,
                 onClick = onImageCardClick,
+                onToggleFavorite = {
+                    onToggleFavoriteStatus(unsplashImage)
+                },
                 onImageCardDragStart = onImageCardDragStart,
                 onImageCardDragEnd = onImageCardDragEnd,
                 onImageCardDragCancel = onImageCardDragCancel
@@ -56,7 +61,9 @@ fun UnsplashImageCardGrids(
     modifier: Modifier = Modifier,
     bottomContentPadding: Dp = 0.dp,
     unsplashImages: LazyPagingItems<UnsplashImage>,
+    favoriteImagesIds: List<String>,
     onImageCardClick: (imageId: String) -> Unit,
+    onToggleFavoriteStatus: (image: UnsplashImage) -> Unit,
     onImageCardDragStart: (previewImage: UnsplashImage?) -> Unit,
     onImageCardDragEnd: () -> Unit,
     onImageCardDragCancel: () -> Unit
@@ -79,9 +86,16 @@ fun UnsplashImageCardGrids(
             count = unsplashImages.itemCount,
         ) { index ->
             val unsplashImage = unsplashImages[index]
+            val isFavorite = favoriteImagesIds.contains(unsplashImage?.id)
             UnsplashImageCard(
                 unsplashImage = unsplashImage,
+                isFavorite = isFavorite,
                 onClick = onImageCardClick,
+                onToggleFavorite = {
+                    unsplashImage?.let {
+                        onToggleFavoriteStatus(it)
+                    }
+                },
                 onImageCardDragStart = onImageCardDragStart,
                 onImageCardDragEnd = onImageCardDragEnd,
                 onImageCardDragCancel = onImageCardDragCancel

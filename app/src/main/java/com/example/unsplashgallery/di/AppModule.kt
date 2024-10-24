@@ -1,6 +1,9 @@
 package com.example.unsplashgallery.di
 
 import android.content.Context
+import androidx.room.Room
+import com.example.unsplashgallery.data.local.dao.FavoriteImagesDao
+import com.example.unsplashgallery.data.local.database.AppDatabase
 import com.example.unsplashgallery.data.remote.api.UnsplashApiService
 import com.example.unsplashgallery.data.repository.ImageDownloadManagerImpl
 import com.example.unsplashgallery.data.repository.ImageRepositoryImpl
@@ -46,10 +49,12 @@ object AppModule {
     @Provides
     @Singleton
     fun provideImageRepository(
-        unsplashApiService: UnsplashApiService
+        unsplashApiService: UnsplashApiService,
+        favoriteImagesDao: FavoriteImagesDao
     ): ImageRepository {
         return ImageRepositoryImpl(
-            unsplashApiService = unsplashApiService
+            unsplashApiService = unsplashApiService,
+            favoriteImagesDao = favoriteImagesDao
         )
     }
 
@@ -89,5 +94,27 @@ object AppModule {
     @Singleton
     fun provideApplicationScope(): CoroutineScope {
         return CoroutineScope(SupervisorJob() + Dispatchers.Default)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAppDatabase(
+        @ApplicationContext context: Context
+    ): AppDatabase {
+        return Room
+            .databaseBuilder(
+                context = context,
+                klass = AppDatabase::class.java,
+                name = Constants.DATABASE
+            )
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideFavoriteImagesDao(
+        appDatabase: AppDatabase
+    ): FavoriteImagesDao {
+        return appDatabase.favoriteImagesDao
     }
 }

@@ -9,13 +9,17 @@
     <string name="unknown_username">Unknown Username</string>
     <string name="url_placeholder">https://placehold.co/400</string>
     <string name="image_loading_error">Unable to load the image.</string>
-    <string name="downloading">Downloading....</string>
+    <string name="set_wallpaper">Set Wallpaper</string>
     <string name="wallpaper_image">Wallpaper Image</string>
     <string name="confirm">Confirm</string>
     <string name="connected">Connected to internet.</string>
     <string name="disconnected">No internet connection.</string>
     <string name="clear">Clear</string>
     <string name="search_images">Search Images</string>
+    <string name="search_images_message">Search for the images.</string>
+    <string name="favorite">Favorite</string>
+    <string name="empty_favorite_message">Images you saved will appear here.</string>
+    <string name="profile">Profile</string>
     <!--search suggestions-->
     <string name="landscape">Landscape</string>
     <string name="portrait">Portrait</string>

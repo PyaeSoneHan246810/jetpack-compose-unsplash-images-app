@@ -44,7 +44,7 @@ fun PhotographerProfileScreen(
             TopAppBar(
                 title = {
                     Text(
-                        text = "Profile"
+                        text = stringResource(R.string.profile)
                     )
                 },
                 navigationIcon = {

@@ -78,10 +78,12 @@ fun SearchScreen(
     modifier: Modifier = Modifier,
     searchQuery: String,
     unsplashImages: LazyPagingItems<UnsplashImage>?,
+    favoriteImagesIds: List<String>,
     snackBarEventFlow: Flow<SnackBarEvent>,
     onSearchQueryValueChanged: (newQuery: String) -> Unit,
     onSearch: () -> Unit,
     onImageCardClick: (imageId: String) -> Unit,
+    onToggleFavoriteStatus: (image: UnsplashImage) -> Unit,
     onFavoritesFabClick: () -> Unit,
     onNavigateUp: () -> Unit
 ) {
@@ -321,16 +323,21 @@ fun SearchScreen(
                                 .fillMaxWidth(),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text("Search for the images.")
+                            Text(
+                                text = stringResource(R.string.search_images_message),
+                                style = MaterialTheme.typography.bodyMedium
+                            )
                         }
                     }
                     unsplashImages?.let {
                         UnsplashImageCardGrids(
                             bottomContentPadding = paddingValues.calculateBottomPadding(),
                             unsplashImages = it,
+                            favoriteImagesIds = favoriteImagesIds,
                             onImageCardClick = { imageId ->
                                 if (!isPreviewImageCardVisible) onImageCardClick(imageId)
                             },
+                            onToggleFavoriteStatus = onToggleFavoriteStatus,
                             onImageCardDragStart = { image ->
                                 isPreviewImageCardVisible = true
                                 previewImage = image

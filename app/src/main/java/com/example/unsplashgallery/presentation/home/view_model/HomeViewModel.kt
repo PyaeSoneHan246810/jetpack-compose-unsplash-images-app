@@ -52,4 +52,21 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
+    fun toggleFavoriteStatus(image: UnsplashImage) {
+        viewModelScope.launch {
+            try {
+                imageRepository.toggleFavoriteStatus(
+                    image = image
+                )
+            } catch (e: Exception) {
+                e.printStackTrace()
+                _snackBarEvent.send(
+                    SnackBarEvent(
+                        message = "Unable to add to favorites."
+                    )
+                )
+            }
+        }
+    }
 }

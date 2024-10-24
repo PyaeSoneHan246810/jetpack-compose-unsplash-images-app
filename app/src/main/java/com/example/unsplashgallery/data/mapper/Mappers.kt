@@ -1,5 +1,6 @@
 package com.example.unsplashgallery.data.mapper
 
+import com.example.unsplashgallery.data.local.entity.FavoriteImageEntity
 import com.example.unsplashgallery.data.remote.dto.UnsplashImageDto
 import com.example.unsplashgallery.domain.model.UnsplashImage
 
@@ -23,4 +24,36 @@ fun List<UnsplashImageDto>.toDomainModelList(): List<UnsplashImage> {
     return this.map { dto ->
         dto.toDomainModel()
     }
+}
+
+fun UnsplashImage.toFavoriteImageEntity(): FavoriteImageEntity {
+    return FavoriteImageEntity(
+        id = this.id,
+        imageUrlSmall = this.imageUrlSmall,
+        imageUrlRegular = this.imageUrlRegular,
+        imageUrlRaw = this.imageUrlRaw,
+        photographerName = this.photographerName,
+        photographerUsername = this.photographerUsername,
+        photographerProfileImageUrl = this.photographerProfileImageUrl,
+        photographerProfileLink = this.photographerProfileLink,
+        width = this.width,
+        height = this.height,
+        description = this.description
+    )
+}
+
+fun FavoriteImageEntity.toDomainModel(): UnsplashImage {
+    return UnsplashImage(
+        id = this.id,
+        imageUrlSmall = this.imageUrlSmall,
+        imageUrlRegular = this.imageUrlRegular,
+        imageUrlRaw = this.imageUrlRaw,
+        photographerName = this.photographerName,
+        photographerUsername = this.photographerUsername,
+        photographerProfileImageUrl = this.photographerProfileImageUrl,
+        photographerProfileLink = this.photographerProfileLink,
+        width = this.width,
+        height = this.height,
+        description = this.description
+    )
 }

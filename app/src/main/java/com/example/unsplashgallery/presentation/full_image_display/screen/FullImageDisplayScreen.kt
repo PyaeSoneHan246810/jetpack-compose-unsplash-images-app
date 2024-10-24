@@ -1,7 +1,6 @@
 package com.example.unsplashgallery.presentation.full_image_display.screen
 
 import android.annotation.SuppressLint
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -49,7 +48,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImagePainter
@@ -79,8 +77,6 @@ fun FullImageDisplayScreen(
     onDownloadOptionClick: (url: String, title: String?) -> Unit,
     onSetWallpaperButtonClick: (url: String) -> Unit
 ) {
-    //context
-    val context = LocalContext.current
     //coroutine scope
     val scope = rememberCoroutineScope()
     //visibility states
@@ -138,8 +134,6 @@ fun FullImageDisplayScreen(
     val imageInteractionSource = remember {
         MutableInteractionSource()
     }
-    //downloading toast message
-    val downloadingToastMessage = stringResource(R.string.downloading)
     //error snack bar state
     val snackBarHostState = remember {
         SnackbarHostState()
@@ -217,7 +211,8 @@ fun FullImageDisplayScreen(
                     exit = scaleOut() + fadeOut()
                 ) {
                     Text(
-                        text = stringResource(R.string.image_loading_error)
+                        text = stringResource(R.string.image_loading_error),
+                        style = MaterialTheme.typography.bodyMedium
                     )
                 }
                 //image
@@ -306,7 +301,7 @@ fun FullImageDisplayScreen(
                     Button(
                         modifier = Modifier
                             .padding(
-                                bottom = 12.dp
+                                bottom = 24.dp
                             )
                             .navigationBarsPadding(),
                         onClick = {
@@ -316,7 +311,7 @@ fun FullImageDisplayScreen(
                         }
                     ) {
                         Text(
-                            text = "Set Wallpaper"
+                            text = stringResource(R.string.set_wallpaper)
                         )
                     }
                 }
@@ -350,7 +345,6 @@ fun FullImageDisplayScreen(
                                     }
                                 }
                                 onDownloadOptionClick(url, image.description?.take(20))
-                                Toast.makeText(context, downloadingToastMessage, Toast.LENGTH_SHORT).show()
                             }
                         }
                     )

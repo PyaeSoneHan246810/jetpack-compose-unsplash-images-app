@@ -49,7 +49,7 @@ fun SetWallpaperScreen(
     snackBarEventFlow: Flow<SnackBarEvent>,
     onConfirmClick: (imageUrl: String) -> Unit
 ) {
-    //error snack bar state
+    //snack bar state
     val snackBarHostState = remember {
         SnackbarHostState()
     }

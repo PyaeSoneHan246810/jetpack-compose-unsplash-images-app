@@ -5,12 +5,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import androidx.paging.compose.collectAsLazyPagingItems
 import com.example.unsplashgallery.presentation.favorites.screen.FavoritesScreen
+import com.example.unsplashgallery.presentation.favorites.view_model.FavoritesViewModel
 import com.example.unsplashgallery.presentation.full_image_display.screen.FullImageDisplayScreen
 import com.example.unsplashgallery.presentation.full_image_display.view_model.FullImageDisplayViewModel
 import com.example.unsplashgallery.presentation.home.screen.HomeScreen
@@ -33,7 +35,7 @@ fun MainNavGraph(
     ) {
         composable<Destination.Home> {
             val homeViewModel = hiltViewModel<HomeViewModel>()
-            val unsplashImages by homeViewModel.unsplashImages.collectAsState()
+            val unsplashImages by homeViewModel.unsplashImages.collectAsStateWithLifecycle()
             val snackBarEventFlow = homeViewModel.snackBarEvent
             HomeScreen(
                 unsplashImages = unsplashImages,
@@ -43,6 +45,11 @@ fun MainNavGraph(
                         Destination.FullImageDisplay(
                             imageId = imageId
                         )
+                    )
+                },
+                onToggleFavoriteStatus = { image ->
+                    homeViewModel.toggleFavoriteStatus(
+                        image = image
                     )
                 },
                 onSearchIconButtonClick = {
@@ -55,12 +62,13 @@ fun MainNavGraph(
         }
         composable<Destination.Search> {
             val searchViewModel = hiltViewModel<SearchViewModel>()
-            val searchScreenState by searchViewModel.searchScreenState.collectAsState()
-            val unsplashImages = searchScreenState.searchResults?.collectAsLazyPagingItems()
+            val searchScreenState by searchViewModel.searchScreenState.collectAsStateWithLifecycle()
+            val favoriteImagesIds by searchViewModel.favoriteImagesIds.collectAsStateWithLifecycle()
             val snackBarEventFlow = searchViewModel.snackBarEvent
             SearchScreen(
                 searchQuery = searchScreenState.searchQuery,
-                unsplashImages = unsplashImages,
+                unsplashImages = searchScreenState.searchResults?.collectAsLazyPagingItems(),
+                favoriteImagesIds = favoriteImagesIds,
                 snackBarEventFlow = snackBarEventFlow,
                 onSearchQueryValueChanged = { newQuery ->
                     searchViewModel.updateSearchQuery(
@@ -77,6 +85,11 @@ fun MainNavGraph(
                         )
                     )
                 },
+                onToggleFavoriteStatus = { image ->
+                    searchViewModel.toggleFavoriteStatus(
+                        image = image
+                    )
+                },
                 onFavoritesFabClick = {
                     navHostController.navigate(Destination.Favorites)
                 },
@@ -86,12 +99,31 @@ fun MainNavGraph(
             )
         }
         composable<Destination.Favorites> {
+            val favoritesViewModel = hiltViewModel<FavoritesViewModel>()
+            val favoriteImagesId by favoritesViewModel.favoriteImagesIds.collectAsStateWithLifecycle()
+            val favoriteImages by favoritesViewModel.favoriteImages.collectAsStateWithLifecycle()
+            val snackBarEventFlow = favoritesViewModel.snackBarEvent
             FavoritesScreen(
-                onArrowBackIconButtonClick = {
-                    navHostController.navigateUp()
+                unsplashImages = favoriteImages?.collectAsLazyPagingItems(),
+                favoriteImagesIds = favoriteImagesId,
+                snackBarEventFlow = snackBarEventFlow,
+                onImageCardClick = { imageId ->
+                    navHostController.navigate(
+                        Destination.FullImageDisplay(
+                            imageId = imageId
+                        )
+                    )
+                },
+                onToggleFavoriteStatus = { image ->
+                    favoritesViewModel.toggleFavoriteStatus(
+                        image = image
+                    )
                 },
                 onSearchIconButtonClick = {
                     navHostController.navigate(Destination.Search)
+                },
+                onArrowBackIconButtonClick = {
+                    navHostController.navigateUp()
                 }
             )
         }
@@ -126,10 +158,9 @@ fun MainNavGraph(
         }
         composable<Destination.SetWallpaper> { navBackStackEntry ->
             val destination = navBackStackEntry.toRoute<Destination.SetWallpaper>()
-            val imageUrl = destination.imageUrl
             val setWallpaperViewModel = hiltViewModel<SetWallpaperViewModel>()
             SetWallpaperScreen(
-                imageUrl = imageUrl,
+                imageUrl = destination.imageUrl,
                 isLoading = setWallpaperViewModel.isLoading,
                 snackBarEventFlow = setWallpaperViewModel.snackBarEvent,
                 onConfirmClick = { url ->
@@ -139,9 +170,8 @@ fun MainNavGraph(
         }
         composable<Destination.PhotographerProfile> { navBackStackEntry ->
             val destination = navBackStackEntry.toRoute<Destination.PhotographerProfile>()
-            val profileLink = destination.profileLink
             PhotographerProfileScreen(
-                profileLink = profileLink,
+                profileLink = destination.profileLink,
                 onArrowBackIconButtonClick = {
                     navHostController.navigateUp()
                 }

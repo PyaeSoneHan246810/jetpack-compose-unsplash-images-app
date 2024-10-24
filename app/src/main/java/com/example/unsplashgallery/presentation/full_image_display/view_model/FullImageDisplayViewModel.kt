@@ -58,7 +58,7 @@ class FullImageDisplayViewModel @Inject constructor(
                 e.printStackTrace()
                 _snackBarEvent.send(
                     SnackBarEvent(
-                        message = "Unable to load image."
+                        message = "Unable to load the wallpaper."
                     )
                 )
             }
@@ -67,6 +67,11 @@ class FullImageDisplayViewModel @Inject constructor(
 
     fun downloadImage(url: String, title: String?) {
         viewModelScope.launch {
+            _snackBarEvent.send(
+                SnackBarEvent(
+                    message = "Downloading the wallpaper."
+                )
+            )
             try {
                 imageDownloadManager.downloadImageFile(url, title)
             } catch (e: UnknownHostException) {
@@ -80,7 +85,7 @@ class FullImageDisplayViewModel @Inject constructor(
                 e.printStackTrace()
                 _snackBarEvent.send(
                     SnackBarEvent(
-                        message = "Unable to download image."
+                        message = "Unable to download the wallpaper."
                     )
                 )
             }
