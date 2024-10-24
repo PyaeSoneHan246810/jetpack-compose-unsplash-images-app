@@ -5,7 +5,7 @@ import com.example.unsplashgallery.domain.model.UnsplashImage
 import kotlinx.coroutines.flow.Flow
 
 interface ImageRepository {
-    suspend fun getEditorialFeedImages(): List<UnsplashImage>
+    fun getEditorialFeedImages(): Flow<PagingData<UnsplashImage>>
     suspend fun getSingleImage(imageId: String): UnsplashImage
     fun getSearchImages(query: String): Flow<PagingData<UnsplashImage>>
     suspend fun toggleFavoriteStatus(image: UnsplashImage)

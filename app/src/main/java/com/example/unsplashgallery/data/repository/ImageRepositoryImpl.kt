@@ -1,13 +1,14 @@
 package com.example.unsplashgallery.data.repository
 
+import androidx.paging.ExperimentalPagingApi
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import androidx.paging.PagingData
 import androidx.paging.map
-import com.example.unsplashgallery.data.local.dao.FavoriteImagesDao
+import com.example.unsplashgallery.data.local.database.AppDatabase
 import com.example.unsplashgallery.data.mapper.toDomainModel
-import com.example.unsplashgallery.data.mapper.toDomainModelList
 import com.example.unsplashgallery.data.mapper.toFavoriteImageEntity
+import com.example.unsplashgallery.data.paging.EditorialFeedRemoteMediator
 import com.example.unsplashgallery.data.paging.SearchImagesPagingSource
 import com.example.unsplashgallery.data.remote.api.UnsplashApiService
 import com.example.unsplashgallery.domain.model.UnsplashImage
@@ -18,9 +19,33 @@ import kotlinx.coroutines.flow.map
 
 class ImageRepositoryImpl(
     private val unsplashApiService: UnsplashApiService,
-    private val favoriteImagesDao: FavoriteImagesDao
+    private val appDatabase: AppDatabase,
 ): ImageRepository {
-    override suspend fun getEditorialFeedImages(): List<UnsplashImage> = unsplashApiService.getEditorialFeedImages().toDomainModelList()
+
+    private val cachedImagesDao = appDatabase.cachedImagesDao
+
+    private val favoriteImagesDao = appDatabase.favoriteImagesDao
+
+    @OptIn(ExperimentalPagingApi::class)
+    override fun getEditorialFeedImages(): Flow<PagingData<UnsplashImage>> {
+        val pager = Pager(
+            config = PagingConfig(
+                pageSize = Constants.IMAGES_PER_PAGE
+            ),
+            remoteMediator = EditorialFeedRemoteMediator(
+                apiService = unsplashApiService,
+                appDatabase = appDatabase,
+            ),
+            pagingSourceFactory = {
+                cachedImagesDao.getAllCachedImages()
+            },
+        )
+        return pager.flow.map { pagingData ->
+            pagingData.map { entity ->
+                entity.toDomainModel()
+            }
+        }
+    }
 
     override suspend fun getSingleImage(imageId: String): UnsplashImage = unsplashApiService.getSingleImage(imageId).toDomainModel()
 
@@ -64,8 +89,8 @@ class ImageRepositoryImpl(
             }
         )
         return pager.flow.map { pagingData ->
-            pagingData.map { image ->
-                image.toDomainModel()
+            pagingData.map { entity ->
+                entity.toDomainModel()
             }
         }
     }

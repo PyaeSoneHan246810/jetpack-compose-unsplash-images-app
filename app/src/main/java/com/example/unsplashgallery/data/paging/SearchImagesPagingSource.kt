@@ -2,7 +2,7 @@ package com.example.unsplashgallery.data.paging
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
-import com.example.unsplashgallery.data.mapper.toDomainModelList
+import com.example.unsplashgallery.data.mapper.toDomainModel
 import com.example.unsplashgallery.data.remote.api.UnsplashApiService
 import com.example.unsplashgallery.domain.model.UnsplashImage
 
@@ -27,7 +27,9 @@ class SearchImagesPagingSource(
             )
             val endOfPaginationReached = searchResult.images.isEmpty()
             LoadResult.Page(
-                data = searchResult.images.toDomainModelList(),
+                data = searchResult.images.map { unsplashImageDto ->
+                    unsplashImageDto.toDomainModel()
+                },
                 prevKey = if (currentPage == STARTING_PAGE) null else currentPage - 1,
                 nextKey = if (endOfPaginationReached) null else currentPage + 1
             )

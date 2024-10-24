@@ -36,9 +36,11 @@ fun MainNavGraph(
         composable<Destination.Home> {
             val homeViewModel = hiltViewModel<HomeViewModel>()
             val unsplashImages by homeViewModel.unsplashImages.collectAsStateWithLifecycle()
+            val favoriteImagesIds by homeViewModel.favoriteImagesIds.collectAsStateWithLifecycle()
             val snackBarEventFlow = homeViewModel.snackBarEvent
             HomeScreen(
-                unsplashImages = unsplashImages,
+                unsplashImages = unsplashImages?.collectAsLazyPagingItems(),
+                favoriteImagesIds = favoriteImagesIds,
                 snackBarEventFlow = snackBarEventFlow,
                 onImageCardClick = { imageId ->
                     navHostController.navigate(

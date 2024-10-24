@@ -34,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.paging.compose.LazyPagingItems
 import com.example.unsplashgallery.R
 import com.example.unsplashgallery.domain.model.UnsplashImage
 import com.example.unsplashgallery.presentation.common.components.MainTopAppBar
@@ -48,7 +49,8 @@ import kotlinx.coroutines.flow.Flow
 @Composable
 fun HomeScreen(
     modifier: Modifier = Modifier,
-    unsplashImages: List<UnsplashImage>,
+    unsplashImages: LazyPagingItems<UnsplashImage>?,
+    favoriteImagesIds: List<String>,
     snackBarEventFlow: Flow<SnackBarEvent>,
     onImageCardClick: (imageId: String) -> Unit,
     onToggleFavoriteStatus: (image: UnsplashImage) -> Unit,
@@ -137,26 +139,29 @@ fun HomeScreen(
                         top = paddingValues.calculateTopPadding(),
                     )
             ) {
-                UnsplashImageCardGrids(
-                    bottomContentPadding = paddingValues.calculateBottomPadding(),
-                    unsplashImages = unsplashImages,
-                    onImageCardClick = { imageId ->
-                        if (!isPreviewImageCardVisible) onImageCardClick(imageId)
-                    },
-                    onToggleFavoriteStatus = onToggleFavoriteStatus,
-                    onImageCardDragStart = { image ->
-                        isPreviewImageCardVisible = true
-                        previewImage = image
-                    },
-                    onImageCardDragEnd = {
-                        isPreviewImageCardVisible = false
-                        previewImage = null
-                    },
-                    onImageCardDragCancel = {
-                        isPreviewImageCardVisible = false
-                        previewImage = null
-                    }
-                )
+                unsplashImages?.let {
+                    UnsplashImageCardGrids(
+                        bottomContentPadding = paddingValues.calculateBottomPadding(),
+                        unsplashImages = it,
+                        favoriteImagesIds = favoriteImagesIds,
+                        onImageCardClick = { imageId ->
+                            if (!isPreviewImageCardVisible) onImageCardClick(imageId)
+                        },
+                        onToggleFavoriteStatus = onToggleFavoriteStatus,
+                        onImageCardDragStart = { image ->
+                            isPreviewImageCardVisible = true
+                            previewImage = image
+                        },
+                        onImageCardDragEnd = {
+                            isPreviewImageCardVisible = false
+                            previewImage = null
+                        },
+                        onImageCardDragCancel = {
+                            isPreviewImageCardVisible = false
+                            previewImage = null
+                        }
+                    )
+                }
             }
         }
         AnimatedVisibility(

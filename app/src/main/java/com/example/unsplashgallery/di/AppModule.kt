@@ -2,7 +2,6 @@ package com.example.unsplashgallery.di
 
 import android.content.Context
 import androidx.room.Room
-import com.example.unsplashgallery.data.local.dao.FavoriteImagesDao
 import com.example.unsplashgallery.data.local.database.AppDatabase
 import com.example.unsplashgallery.data.remote.api.UnsplashApiService
 import com.example.unsplashgallery.data.repository.ImageDownloadManagerImpl
@@ -25,15 +24,30 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
 import retrofit2.Retrofit
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+
     @Provides
     @Singleton
-    fun provideUnsplashApiService(): UnsplashApiService {
+    fun provideOkHttpClient(): OkHttpClient {
+        return OkHttpClient()
+            .newBuilder()
+            .connectTimeout(15, TimeUnit.SECONDS)
+            .readTimeout(15, TimeUnit.SECONDS)
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideUnsplashApiService(
+        okHttpClient: OkHttpClient
+    ): UnsplashApiService {
         val json = Json {
             ignoreUnknownKeys = true
         }
@@ -41,6 +55,7 @@ object AppModule {
         return Retrofit
             .Builder()
             .baseUrl(Constants.BASE_URL)
+            .client(okHttpClient)
             .addConverterFactory(json.asConverterFactory(contentType))
             .build()
             .create(UnsplashApiService::class.java)
@@ -48,13 +63,27 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideAppDatabase(
+        @ApplicationContext context: Context
+    ): AppDatabase {
+        return Room
+            .databaseBuilder(
+                context = context,
+                klass = AppDatabase::class.java,
+                name = Constants.DATABASE
+            )
+            .build()
+    }
+
+    @Provides
+    @Singleton
     fun provideImageRepository(
         unsplashApiService: UnsplashApiService,
-        favoriteImagesDao: FavoriteImagesDao
+        appDatabase: AppDatabase,
     ): ImageRepository {
         return ImageRepositoryImpl(
             unsplashApiService = unsplashApiService,
-            favoriteImagesDao = favoriteImagesDao
+            appDatabase = appDatabase,
         )
     }
 
@@ -94,27 +123,5 @@ object AppModule {
     @Singleton
     fun provideApplicationScope(): CoroutineScope {
         return CoroutineScope(SupervisorJob() + Dispatchers.Default)
-    }
-
-    @Provides
-    @Singleton
-    fun provideAppDatabase(
-        @ApplicationContext context: Context
-    ): AppDatabase {
-        return Room
-            .databaseBuilder(
-                context = context,
-                klass = AppDatabase::class.java,
-                name = Constants.DATABASE
-            )
-            .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideFavoriteImagesDao(
-        appDatabase: AppDatabase
-    ): FavoriteImagesDao {
-        return appDatabase.favoriteImagesDao
     }
 }
