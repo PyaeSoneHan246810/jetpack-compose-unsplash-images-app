@@ -19,6 +19,7 @@
     <string name="search_images_message">Search for the images.</string>
     <string name="favorite">Favorite</string>
     <string name="empty_favorite_message">Images you saved will appear here.</string>
+    <string name="empty_search_message">There is no images.</string>
     <string name="profile">Profile</string>
     <!--search suggestions-->
     <string name="landscape">Landscape</string>

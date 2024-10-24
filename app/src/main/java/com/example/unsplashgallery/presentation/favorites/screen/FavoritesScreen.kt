@@ -8,7 +8,6 @@ import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -36,7 +35,7 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import com.example.unsplashgallery.R
 import com.example.unsplashgallery.domain.model.UnsplashImage
-import com.example.unsplashgallery.presentation.common.components.EmptyContent
+import com.example.unsplashgallery.presentation.common.components.EmptyOrDefaultContent
 import com.example.unsplashgallery.presentation.common.components.MainTopAppBar
 import com.example.unsplashgallery.presentation.common.components.PreviewImageCard
 import com.example.unsplashgallery.presentation.common.components.UnsplashImageCardGrids
@@ -126,18 +125,29 @@ fun FavoritesScreen(
                     )
             ) {
                 unsplashImages?.let {
-                    if (it.itemCount == 0) {
+                    AnimatedVisibility(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        visible = it.itemCount == 0,
+                        enter = scaleIn() + fadeIn(),
+                        exit = scaleOut() + fadeOut()
+                    ) {
                         Box(
                             modifier = Modifier
-                                .fillMaxWidth(),
+                                .fillMaxSize(),
                             contentAlignment = Alignment.Center
                         ) {
-                            EmptyContent(
+                            EmptyOrDefaultContent(
                                 imageVector = Icons.Rounded.Image,
                                 message = stringResource(R.string.empty_favorite_message)
                             )
                         }
-                    } else {
+                    }
+                    AnimatedVisibility(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        visible = it.itemCount != 0
+                    ) {
                         UnsplashImageCardGrids(
                             bottomContentPadding = paddingValues.calculateBottomPadding(),
                             unsplashImages = it,

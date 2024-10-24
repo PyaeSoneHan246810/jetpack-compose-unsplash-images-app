@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun EmptyContent(
+fun EmptyOrDefaultContent(
     modifier: Modifier = Modifier,
     imageVector: ImageVector,
     message: String,

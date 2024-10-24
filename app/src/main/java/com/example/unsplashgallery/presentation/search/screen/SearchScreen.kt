@@ -29,6 +29,8 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.Search
+import androidx.compose.material.icons.rounded.SearchOff
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -52,8 +54,6 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.FocusRequester
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
@@ -65,12 +65,12 @@ import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import com.example.unsplashgallery.R
 import com.example.unsplashgallery.domain.model.UnsplashImage
+import com.example.unsplashgallery.presentation.common.components.EmptyOrDefaultContent
 import com.example.unsplashgallery.presentation.common.components.PreviewImageCard
 import com.example.unsplashgallery.presentation.common.components.UnsplashImageCardGrids
 import com.example.unsplashgallery.presentation.common.utils.SnackBarEvent
 import com.example.unsplashgallery.presentation.common.utils.rememberWindowInsetsControllerCompat
 import com.example.unsplashgallery.presentation.common.utils.toggleSystemBarsVisibility
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 
 @Composable
@@ -101,16 +101,10 @@ fun SearchScreen(
     var previewImage by remember {
         mutableStateOf<UnsplashImage?>(null)
     }
-    //focus requester for text field
-    val focusRequester = remember {
-        FocusRequester()
-    }
-    val focusManager = LocalFocusManager.current
+    //keyboard controller
     val keyboardController = LocalSoftwareKeyboardController.current
-    LaunchedEffect(key1 = true) {
-        delay(500)
-        focusRequester.requestFocus()
-    }
+    //focus manager
+    val focusManager = LocalFocusManager.current
     //suggestions state
     var isSuggestionsVisible by rememberSaveable {
         mutableStateOf(false)
@@ -203,7 +197,6 @@ fun SearchScreen(
                         TextField(
                             modifier = Modifier
                                 .weight(1f)
-                                .focusRequester(focusRequester)
                                 .onFocusChanged { focusState ->
                                     isSuggestionsVisible = focusState.isFocused
                                 },
@@ -271,6 +264,8 @@ fun SearchScreen(
                             .height(12.dp)
                     )
                     AnimatedVisibility(
+                        modifier = Modifier
+                            .fillMaxWidth(),
                         visible = isSuggestionsVisible,
                         enter = slideInVertically() + fadeIn(),
                         exit = slideOutVertically() + fadeOut()
@@ -310,47 +305,76 @@ fun SearchScreen(
                             }
                         }
                     }
-                    AnimatedVisibility(
+                    Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .weight(1f),
-                        visible = unsplashImages == null,
-                        enter = scaleIn() + fadeIn(),
-                        exit = scaleOut() + fadeOut()
+                            .weight(1f)
                     ) {
-                        Box(
+                        androidx.compose.animation.AnimatedVisibility(
                             modifier = Modifier
-                                .fillMaxWidth(),
-                            contentAlignment = Alignment.Center
+                                .fillMaxSize(),
+                            visible = unsplashImages == null,
+                            enter = scaleIn() + fadeIn(),
+                            exit = scaleOut() + fadeOut()
                         ) {
-                            Text(
-                                text = stringResource(R.string.search_images_message),
-                                style = MaterialTheme.typography.bodyMedium
-                            )
-                        }
-                    }
-                    unsplashImages?.let {
-                        UnsplashImageCardGrids(
-                            bottomContentPadding = paddingValues.calculateBottomPadding(),
-                            unsplashImages = it,
-                            favoriteImagesIds = favoriteImagesIds,
-                            onImageCardClick = { imageId ->
-                                if (!isPreviewImageCardVisible) onImageCardClick(imageId)
-                            },
-                            onToggleFavoriteStatus = onToggleFavoriteStatus,
-                            onImageCardDragStart = { image ->
-                                isPreviewImageCardVisible = true
-                                previewImage = image
-                            },
-                            onImageCardDragEnd = {
-                                isPreviewImageCardVisible = false
-                                previewImage = null
-                            },
-                            onImageCardDragCancel = {
-                                isPreviewImageCardVisible = false
-                                previewImage = null
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                EmptyOrDefaultContent(
+                                    imageVector = Icons.Rounded.Search,
+                                    message = stringResource(R.string.search_images_message)
+                                )
                             }
-                        )
+                        }
+                        unsplashImages?.let {
+                            androidx.compose.animation.AnimatedVisibility(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                visible = it.itemCount == 0,
+                                enter = scaleIn() + fadeIn(),
+                                exit = scaleOut() + fadeOut()
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    EmptyOrDefaultContent(
+                                        imageVector = Icons.Rounded.SearchOff,
+                                        message = stringResource(R.string.empty_search_message)
+                                    )
+                                }
+                            }
+                            androidx.compose.animation.AnimatedVisibility(
+                                modifier = Modifier
+                                    .fillMaxSize(),
+                                visible = it.itemCount != 0,
+                            ) {
+                                UnsplashImageCardGrids(
+                                    bottomContentPadding = paddingValues.calculateBottomPadding(),
+                                    unsplashImages = it,
+                                    favoriteImagesIds = favoriteImagesIds,
+                                    onImageCardClick = { imageId ->
+                                        if (!isPreviewImageCardVisible) onImageCardClick(imageId)
+                                    },
+                                    onToggleFavoriteStatus = onToggleFavoriteStatus,
+                                    onImageCardDragStart = { image ->
+                                        isPreviewImageCardVisible = true
+                                        previewImage = image
+                                    },
+                                    onImageCardDragEnd = {
+                                        isPreviewImageCardVisible = false
+                                        previewImage = null
+                                    },
+                                    onImageCardDragCancel = {
+                                        isPreviewImageCardVisible = false
+                                        previewImage = null
+                                    }
+                                )
+                            }
+                        }
                     }
                 }
             }
